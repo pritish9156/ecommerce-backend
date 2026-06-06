@@ -6,4 +6,45 @@
   <packaging>war</packaging>
   <name>ShopVerse-marketplace</name>
   <description>a e-commerce application backend project using hibernate, servlet, jdbc and mysql</description>
+
+  <properties>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+  
+  	<dependency>
+    	<groupId>jakarta.persistence</groupId>
+    	<artifactId>jakarta.persistence-api</artifactId>
+    	<version>3.1.0</version>
+	</dependency>  
+	
+  	<dependency>
+  		<groupId>org.hibernate</groupId>
+  		<artifactId>hibernate-core</artifactId>
+		<version>6.3.2.Final</version>
+  	</dependency>
+  	
+  	<dependency>
+  		<groupId>com.mysql</groupId>
+  		<artifactId>mysql-connector-j</artifactId>
+	    <version>9.7.0</version>
+  	</dependency>
+  	
+  	<dependency>
+    	<groupId>jakarta.servlet</groupId>
+    	<artifactId>jakarta.servlet-api</artifactId>
+    	<version>6.0.0</version>
+    	<scope>provided</scope>
+	</dependency>
+	
+	<dependency>
+    	<groupId>org.slf4j</groupId>
+    	<artifactId>slf4j-simple</artifactId>
+   	 <version>2.0.9</version>
+	</dependency>
+	
+  </dependencies>
+  
 </project>
