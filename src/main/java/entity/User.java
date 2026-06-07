@@ -2,6 +2,7 @@ package entity;
 
 import java.time.LocalDateTime;
 
+import entity.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,10 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Table(name="users")
@@ -23,6 +20,7 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "user_id")
 	private Long id;
 	
 	@Column(nullable = false, length = 50)
@@ -69,7 +67,7 @@ public class User {
 
 	public User(Long id, String firstName, String lastName, String email, String password, String mobileNumber,
 			Role role, boolean isActive, boolean emailVerified, LocalDateTime createdAt, LocalDateTime updatedAt) {
-		super();
+
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;

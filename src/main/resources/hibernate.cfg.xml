@@ -32,9 +32,26 @@
 		
 		<property name="hibernate.format_sql">true</property>
 		
-		<property name="hibernate.hbm2ddl.auto">update</property>
+		<property name="hibernate.hbm2ddl.auto">create</property>
 		
 		<mapping class="entity.User" />
+		<mapping class="entity.Category" />
+		<mapping class="entity.Brand" />
+		<mapping class="entity.Product" />
+		<mapping class="entity.ProductVariant" />
+		<mapping class="entity.Attribute" />
+		<mapping class="entity.AttributeValue" />
+		<mapping class="entity.VariantAttribute" />
+		<mapping class="entity.ProductImage" />
+		<mapping class="entity.ProductCategory" />
+		<mapping class="entity.Cart" />
+		<mapping class="entity.CartItem" />
+		<mapping class="entity.Address"/>
+		<mapping class="entity.Order"/>
+		<mapping class="entity.OrderItem"/>
+		<mapping class="entity.Payment"/>
+		<mapping class="entity.Review"/>
+		<mapping class="entity.Wishlist"/>
 		
 	</session-factory>
 	
