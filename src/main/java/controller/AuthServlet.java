@@ -1,0 +1,114 @@
+package controller;
+
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import dto.ApiResponse;
+import dto.AuthResponse;
+import dto.LoginRequest;
+import dto.RegisterRequest;
+import dto.ResendVerificationRequest;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import service.AuthService;
+
+@WebServlet("/auth/*")
+public class AuthServlet extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+
+	private AuthService authService;
+	private ObjectMapper objectMapper;
+
+	@Override
+	public void init() {
+
+		authService = new AuthService();
+
+		objectMapper = new ObjectMapper();
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		String path = request.getPathInfo();
+
+		if ("/verify".equals(path)) {
+
+			String token = request.getParameter("token");
+
+			ApiResponse apiResponse = authService.verifyEmail(token);
+
+			response.setContentType("application/json");
+
+			objectMapper.writeValue(response.getWriter(), apiResponse);
+		} else {
+
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		String path = request.getPathInfo();
+
+		switch (path) {
+
+		case "/register":
+			register(request, response);
+			break;
+
+		case "/login":
+			login(request, response);
+			break;
+
+		case "/resend-verification":
+			resendVerification(request, response);
+			break;
+
+		default:
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
+	}
+
+	private void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		RegisterRequest registerRequest = objectMapper.readValue(request.getInputStream(), RegisterRequest.class);
+
+		ApiResponse apiResponse = authService.register(registerRequest);
+
+		response.setContentType("application/json");
+
+		objectMapper.writeValue(response.getWriter(), apiResponse);
+	}
+
+	private void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+
+		AuthResponse authResponse = authService.login(loginRequest);
+
+		response.setContentType("application/json");
+
+		objectMapper.writeValue(response.getWriter(), authResponse);
+	}
+
+	private void resendVerification(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		ResendVerificationRequest resendRequest = objectMapper.readValue(request.getInputStream(),
+				ResendVerificationRequest.class);
+
+		ApiResponse apiResponse = authService.resendVerificationEmail(resendRequest.getEmail());
+
+		response.setContentType("application/json");
+
+		objectMapper.writeValue(response.getWriter(), apiResponse);
+	}
+}

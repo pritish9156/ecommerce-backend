@@ -66,4 +66,93 @@ public class Review {
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+	public Review(User user, ProductVariant productVariant, Integer rating, String reviewTitle, String reviewText,
+			boolean isVerifiedPurchase, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		super();
+		this.user = user;
+		this.productVariant = productVariant;
+		this.rating = rating;
+		this.reviewTitle = reviewTitle;
+		this.reviewText = reviewText;
+		this.isVerifiedPurchase = isVerifiedPurchase;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+    
+    public Review() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public ProductVariant getProductVariant() {
+		return productVariant;
+	}
+
+	public void setProductVariant(ProductVariant productVariant) {
+		this.productVariant = productVariant;
+	}
+
+	public Integer getRating() {
+		return rating;
+	}
+
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	public String getReviewTitle() {
+		return reviewTitle;
+	}
+
+	public void setReviewTitle(String reviewTitle) {
+		this.reviewTitle = reviewTitle;
+	}
+
+	public String getReviewText() {
+		return reviewText;
+	}
+
+	public void setReviewText(String reviewText) {
+		this.reviewText = reviewText;
+	}
+
+	public boolean isVerifiedPurchase() {
+		return isVerifiedPurchase;
+	}
+
+	public void setVerifiedPurchase(boolean isVerifiedPurchase) {
+		this.isVerifiedPurchase = isVerifiedPurchase;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	@Override
+	public String toString() {
+		return "Review [id=" + id + ", user=" + user + ", productVariant=" + productVariant + ", rating=" + rating
+				+ ", reviewTitle=" + reviewTitle + ", reviewText=" + reviewText + ", isVerifiedPurchase="
+				+ isVerifiedPurchase + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+	}
+    
 }

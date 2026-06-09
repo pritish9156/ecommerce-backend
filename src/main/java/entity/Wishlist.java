@@ -44,4 +44,46 @@ public class Wishlist {
     public void prePersist() {
         createdAt = LocalDateTime.now();
     }
+    
+    public Wishlist() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Wishlist(User user, ProductVariant productVariant, LocalDateTime createdAt) {
+		super();
+		this.user = user;
+		this.productVariant = productVariant;
+		this.createdAt = createdAt;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public ProductVariant getProductVariant() {
+		return productVariant;
+	}
+
+	public void setProductVariant(ProductVariant productVariant) {
+		this.productVariant = productVariant;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	@Override
+	public String toString() {
+		return "Wishlist [id=" + id + ", user=" + user + ", productVariant=" + productVariant + ", createdAt="
+				+ createdAt + "]";
+	}
+    
 }

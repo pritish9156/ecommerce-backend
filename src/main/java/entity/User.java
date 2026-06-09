@@ -54,6 +54,7 @@ public class User {
 	
 	@PrePersist
 	public void onCreate() {
+		role = Role.CUSTOMER;
 		isActive = true;
 		emailVerified = false;
 		createdAt = LocalDateTime.now();

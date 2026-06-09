@@ -59,4 +59,89 @@ public class ProductVariant {
 	public void preUpdate() {
 		updatedAt = LocalDateTime.now();
 	}
+
+	public ProductVariant(Product product, String sku, BigDecimal price, BigDecimal discountPercentage, int stock,
+			boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		super();
+		this.product = product;
+		this.sku = sku;
+		this.price = price;
+		this.discountPercentage = discountPercentage;
+		this.stock = stock;
+		this.isActive = isActive;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+	
+	public ProductVariant() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	public String getSku() {
+		return sku;
+	}
+
+	public void setSku(String sku) {
+		this.sku = sku;
+	}
+
+	public BigDecimal getPrice() {
+		return price;
+	}
+
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+
+	public BigDecimal getDiscountPercentage() {
+		return discountPercentage;
+	}
+
+	public void setDiscountPercentage(BigDecimal discountPercentage) {
+		this.discountPercentage = discountPercentage;
+	}
+
+	public int getStock() {
+		return stock;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	@Override
+	public String toString() {
+		return "ProductVariant [id=" + id + ", product=" + product + ", sku=" + sku + ", price=" + price
+				+ ", discountPercentage=" + discountPercentage + ", stock=" + stock + ", isActive=" + isActive
+				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+	}
+	
 }

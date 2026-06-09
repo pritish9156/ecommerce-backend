@@ -32,7 +32,7 @@
 		
 		<property name="hibernate.format_sql">true</property>
 		
-		<property name="hibernate.hbm2ddl.auto">create</property>
+		<property name="hibernate.hbm2ddl.auto">update</property>
 		
 		<mapping class="entity.User" />
 		<mapping class="entity.Category" />
@@ -52,6 +52,7 @@
 		<mapping class="entity.Payment"/>
 		<mapping class="entity.Review"/>
 		<mapping class="entity.Wishlist"/>
+		<mapping class="auth.VerificationToken"/>
 		
 	</session-factory>
 	

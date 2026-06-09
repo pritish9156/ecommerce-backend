@@ -46,4 +46,41 @@ public class Cart {
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+	public Cart(User user, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		super();
+		this.user = user;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
+    
+    public Cart() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	@Override
+	public String toString() {
+		return "Cart [id=" + id + ", user=" + user + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+	}
+    
 }

@@ -50,4 +50,65 @@ public class ProductImage {
 	 public void preCreate() {
 	     createdAt = LocalDateTime.now();
 	 }
+
+	 public ProductImage(Product product, String imageUrl, Integer displayOrder, String altText,
+			LocalDateTime createdAt) {
+
+		this.product = product;
+		this.imageUrl = imageUrl;
+		this.displayOrder = displayOrder;
+		this.altText = altText;
+		this.createdAt = createdAt;
+	 }
+	 
+	 public ProductImage() {
+		// TODO Auto-generated constructor stub
+	}
+
+	 public Product getProduct() {
+		 return product;
+	 }
+
+	 public void setProduct(Product product) {
+		 this.product = product;
+	 }
+
+	 public String getImageUrl() {
+		 return imageUrl;
+	 }
+
+	 public void setImageUrl(String imageUrl) {
+		 this.imageUrl = imageUrl;
+	 }
+
+	 public Integer getDisplayOrder() {
+		 return displayOrder;
+	 }
+
+	 public void setDisplayOrder(Integer displayOrder) {
+		 this.displayOrder = displayOrder;
+	 }
+
+	 public String getAltText() {
+		 return altText;
+	 }
+
+	 public void setAltText(String altText) {
+		 this.altText = altText;
+	 }
+
+	 public Long getId() {
+		 return id;
+	 }
+
+	 public LocalDateTime getCreatedAt() {
+		 return createdAt;
+	 }
+
+	 @Override
+	 public String toString() {
+		return "ProductImage [id=" + id + ", product=" + product + ", imageUrl=" + imageUrl + ", displayOrder="
+				+ displayOrder + ", altText=" + altText + ", createdAt=" + createdAt + "]";
+	 } 
+	 
 }

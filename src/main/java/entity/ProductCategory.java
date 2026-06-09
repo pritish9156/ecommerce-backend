@@ -40,4 +40,40 @@ public class ProductCategory {
 	    nullable = false
 	)
 	private Category category;
+
+	public ProductCategory(Product product, Category category) {
+		super();
+		this.product = product;
+		this.category = category;
+	}
+	
+	public ProductCategory() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	@Override
+	public String toString() {
+		return "ProductCategory [id=" + id + ", product=" + product + ", category=" + category + "]";
+	}
+	
 }
