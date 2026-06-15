@@ -130,4 +130,24 @@ public class AddressDAO {
 
 		return addresses;
 	}
+
+	public boolean existsAddress(Address address) {
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		String hql = "From Address WHERE addressLine1 = :addressLine1 and postalCode = :postalCode and user = :user";
+		
+		Query<Address> query = session.createQuery(hql, Address.class);
+		
+		query.setParameter("addressLine1", address.getAddressLine1());
+		query.setParameter("postalCode", address.getPostalCode());
+		query.setParameter("user", address.getUser());
+		
+		Address result = query.uniqueResult();
+		
+		if(result != null)
+			return true;
+		
+		return false;
+	}
 }

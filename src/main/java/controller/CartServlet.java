@@ -1,52 +1,36 @@
 package controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.AddressRequestDTO;
+import dto.AddToCartRequestDTO;
 import dto.ApiResponse;
-import entity.Address;
+import dto.UpdateCartRequestDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import service.AddressService;
+import service.CartService;
 
-@WebServlet("/address/*")
-public class AddressServlet extends HttpServlet {
+@WebServlet("/cart/*")
+public class CartServlet extends HttpServlet {
 
-	private AddressService addressService;
+	private CartService cartService;
 	private ObjectMapper objectMapper;
 
 	@Override
 	public void init() {
 
-		addressService = new AddressService();
 		objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
-		objectMapper.disable(
-			    SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
-			);
-	}
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+		cartService = new CartService();
 
-		String email = (String) request.getAttribute("email");
-
-		AddressRequestDTO dto = objectMapper.readValue(request.getInputStream(), AddressRequestDTO.class);
-
-		ApiResponse apiResponse = addressService.addAddress(dto, email);
-
-		response.setContentType("application/json");
-
-		objectMapper.writeValue(response.getWriter(), apiResponse);
 	}
 
 	@Override
@@ -55,11 +39,25 @@ public class AddressServlet extends HttpServlet {
 
 		String email = (String) request.getAttribute("email");
 
-		List<Address> addresses = addressService.getUserAddresses(email);
+		response.setContentType("application/json");
+
+		objectMapper.writeValue(response.getWriter(), cartService.getCart(email));
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		String email = (String) request.getAttribute("email");
+
+		AddToCartRequestDTO dto = objectMapper.readValue(request.getInputStream(), AddToCartRequestDTO.class);
+
+		ApiResponse apiResponse = cartService.addToCart(dto, email);
 
 		response.setContentType("application/json");
 
-		objectMapper.writeValue(response.getWriter(), addresses);
+		objectMapper.writeValue(response.getWriter(), apiResponse);
+
 	}
 
 	@Override
@@ -68,9 +66,9 @@ public class AddressServlet extends HttpServlet {
 
 		String email = (String) request.getAttribute("email");
 
-		AddressRequestDTO dto = objectMapper.readValue(request.getInputStream(), AddressRequestDTO.class);
+		UpdateCartRequestDTO dto = objectMapper.readValue(request.getInputStream(), UpdateCartRequestDTO.class);
 
-		ApiResponse apiResponse = addressService.updateAddress(dto, email);
+		ApiResponse apiResponse = cartService.updateQuantity(dto.getCartItemId(), dto.getQuantity(), email);
 
 		response.setContentType("application/json");
 
@@ -81,23 +79,33 @@ public class AddressServlet extends HttpServlet {
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String pathInfo = request.getPathInfo();
-
-		if (pathInfo == null || pathInfo.equals("/")) {
-
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Address ID is required");
-
-			return;
-		}
-
-		Long addressId = Long.parseLong(pathInfo.substring(1));
-
 		String email = (String) request.getAttribute("email");
 
-		ApiResponse apiResponse = addressService.deleteAddress(addressId, email);
+		String pathInfo = request.getPathInfo();
+
+		ApiResponse apiResponse;
+
+		if ("/clear".equals(pathInfo)) {
+
+			apiResponse = cartService.clearCart(email);
+
+		} else {
+
+			if (pathInfo == null || pathInfo.equals("/")) {
+
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cart Item ID is required");
+
+				return;
+			}
+
+			Long cartItemId = Long.parseLong(pathInfo.substring(1));
+
+			apiResponse = cartService.removeItem(cartItemId, email);
+		}
 
 		response.setContentType("application/json");
 
 		objectMapper.writeValue(response.getWriter(), apiResponse);
 	}
+
 }

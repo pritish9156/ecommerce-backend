@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import util.JwtUtil;
 
 @WebFilter({ "/address/*", "/cart/*", "/wishlist/*", "/orders/*" })
+//@WebFilter("/*")
 public class JwtFilter implements Filter {
 
 	UserDAO userDAO = new UserDAO();
@@ -29,11 +30,15 @@ public class JwtFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 
+		System.out.println("JWT FILTER HIT");
+		
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 
 		String authHeader = httpRequest.getHeader("Authorization");
+		
+		System.out.println("HEADER = " + authHeader);
 
 		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 
@@ -54,6 +59,8 @@ public class JwtFilter implements Filter {
 		String email = JwtUtil.extractEmail(token);
 
 		User user = userDAO.findByEmail(email);
+		
+		httpRequest.setAttribute("email", email);
 
 		httpRequest.setAttribute("user", user);
 

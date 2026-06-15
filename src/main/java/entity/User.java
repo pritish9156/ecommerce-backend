@@ -2,6 +2,8 @@ package entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import entity.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,6 +35,7 @@ public class User {
 	private String email;
 	
 	@Column(nullable = false, length = 100)
+	@JsonIgnore
 	private String password;
 	
 	@Column(unique = true, nullable = false, length = 15)

@@ -40,6 +40,13 @@ public class AddressService {
 		address.setCountry(dto.getCountry());
 		address.setPostalCode(dto.getPostalCode());
 		address.setDefault(dto.isDefault());
+		
+		if(addressDAO.existsAddress(address)) {
+
+		    return new ApiResponse(
+		        false,
+		        "Address already exists.");
+		}
 
 		boolean saved = addressDAO.save(address);
 
@@ -65,6 +72,8 @@ public class AddressService {
 		if (user == null) {
 			return new ApiResponse(false, "User not found.");
 		}
+		
+		System.out.println("DTO ID = " + dto.getId());
 
 		Address existingAddress = addressDAO.findById(dto.getId());
 

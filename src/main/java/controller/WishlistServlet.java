@@ -7,31 +7,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.AddressRequestDTO;
 import dto.ApiResponse;
-import entity.Address;
+import dto.WishlistRequestDTO;
+import entity.Wishlist;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import service.AddressService;
+import service.WishlistService;
 
-@WebServlet("/address/*")
-public class AddressServlet extends HttpServlet {
+@WebServlet("/wishlist/*")
+public class WishlistServlet extends HttpServlet {
 
-	private AddressService addressService;
+	private WishlistService wishlistService;
 	private ObjectMapper objectMapper;
 
 	@Override
 	public void init() {
 
-		addressService = new AddressService();
+		wishlistService = new WishlistService();
+
 		objectMapper = new ObjectMapper();
+
 		objectMapper.registerModule(new JavaTimeModule());
-		objectMapper.disable(
-			    SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
-			);
+
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 	}
 
 	@Override
@@ -40,9 +41,9 @@ public class AddressServlet extends HttpServlet {
 
 		String email = (String) request.getAttribute("email");
 
-		AddressRequestDTO dto = objectMapper.readValue(request.getInputStream(), AddressRequestDTO.class);
+		WishlistRequestDTO dto = objectMapper.readValue(request.getInputStream(), WishlistRequestDTO.class);
 
-		ApiResponse apiResponse = addressService.addAddress(dto, email);
+		ApiResponse apiResponse = wishlistService.addToWishlist(dto, email);
 
 		response.setContentType("application/json");
 
@@ -55,46 +56,31 @@ public class AddressServlet extends HttpServlet {
 
 		String email = (String) request.getAttribute("email");
 
-		List<Address> addresses = addressService.getUserAddresses(email);
+		List<Wishlist> wishlistItems = wishlistService.getWishlist(email);
 
 		response.setContentType("application/json");
 
-		objectMapper.writeValue(response.getWriter(), addresses);
-	}
-
-	@Override
-	protected void doPut(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
-		String email = (String) request.getAttribute("email");
-
-		AddressRequestDTO dto = objectMapper.readValue(request.getInputStream(), AddressRequestDTO.class);
-
-		ApiResponse apiResponse = addressService.updateAddress(dto, email);
-
-		response.setContentType("application/json");
-
-		objectMapper.writeValue(response.getWriter(), apiResponse);
+		objectMapper.writeValue(response.getWriter(), wishlistItems);
 	}
 
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		String email = (String) request.getAttribute("email");
+
 		String pathInfo = request.getPathInfo();
 
 		if (pathInfo == null || pathInfo.equals("/")) {
 
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Address ID is required");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Wishlist ID required");
 
 			return;
 		}
 
-		Long addressId = Long.parseLong(pathInfo.substring(1));
+		Long wishlistId = Long.parseLong(pathInfo.substring(1));
 
-		String email = (String) request.getAttribute("email");
-
-		ApiResponse apiResponse = addressService.deleteAddress(addressId, email);
+		ApiResponse apiResponse = wishlistService.removeFromWishlist(wishlistId, email);
 
 		response.setContentType("application/json");
 

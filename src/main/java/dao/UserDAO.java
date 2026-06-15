@@ -37,12 +37,16 @@ public class UserDAO {
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		
+		System.out.println("Searching Email = " + email);
+		
 		String hql = "FROM User WHERE email = :email";
 		Query<User> query = session.createQuery(hql, User.class);
 			
 		query.setParameter("email", email);
 		
 		User user = query.uniqueResult();
+		
+		System.out.println("user = " +user);
 		
 		session.close();
 			

@@ -125,7 +125,7 @@ public class Product {
 		this.averageRating = averageRating;
 	}
 
-	public double getReviewCount() {
+	public int getReviewCount() {
 		return reviewCount;
 	}
 

@@ -3,6 +3,8 @@ package controller;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import dto.ApiResponse;
 import dto.AuthResponse;
@@ -23,6 +25,7 @@ public class AuthServlet extends HttpServlet {
 
 	private AuthService authService;
 	private ObjectMapper objectMapper;
+	
 
 	@Override
 	public void init() {
@@ -30,6 +33,10 @@ public class AuthServlet extends HttpServlet {
 		authService = new AuthService();
 
 		objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
+		objectMapper.disable(
+			    SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
+			);
 	}
 
 	@Override
@@ -92,7 +99,7 @@ public class AuthServlet extends HttpServlet {
 	private void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
-
+	
 		AuthResponse authResponse = authService.login(loginRequest);
 
 		response.setContentType("application/json");

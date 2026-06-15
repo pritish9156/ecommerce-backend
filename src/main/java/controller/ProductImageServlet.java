@@ -7,42 +7,41 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.AddressRequestDTO;
 import dto.ApiResponse;
-import entity.Address;
+import dto.ProductImageRequestDTO;
+import entity.ProductImage;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import service.AddressService;
+import service.ProductImageService;
 
-@WebServlet("/address/*")
-public class AddressServlet extends HttpServlet {
+@WebServlet("/product-image/*")
+public class ProductImageServlet extends HttpServlet {
 
-	private AddressService addressService;
+	private ProductImageService productImageService;
 	private ObjectMapper objectMapper;
 
 	@Override
 	public void init() {
 
-		addressService = new AddressService();
+		productImageService = new ProductImageService();
+
 		objectMapper = new ObjectMapper();
+
 		objectMapper.registerModule(new JavaTimeModule());
-		objectMapper.disable(
-			    SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
-			);
+
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String email = (String) request.getAttribute("email");
+		ProductImageRequestDTO dto = objectMapper.readValue(request.getInputStream(), ProductImageRequestDTO.class);
 
-		AddressRequestDTO dto = objectMapper.readValue(request.getInputStream(), AddressRequestDTO.class);
-
-		ApiResponse apiResponse = addressService.addAddress(dto, email);
+		ApiResponse apiResponse = productImageService.addProductImage(dto);
 
 		response.setContentType("application/json");
 
@@ -53,24 +52,31 @@ public class AddressServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String email = (String) request.getAttribute("email");
+		String pathInfo = request.getPathInfo();
 
-		List<Address> addresses = addressService.getUserAddresses(email);
+		if (pathInfo == null || pathInfo.equals("/")) {
+
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Product ID required");
+
+			return;
+		}
+
+		Long productId = Long.parseLong(pathInfo.substring(1));
+
+		List<ProductImage> images = productImageService.getImagesByProduct(productId);
 
 		response.setContentType("application/json");
 
-		objectMapper.writeValue(response.getWriter(), addresses);
+		objectMapper.writeValue(response.getWriter(), images);
 	}
 
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String email = (String) request.getAttribute("email");
+		ProductImageRequestDTO dto = objectMapper.readValue(request.getInputStream(), ProductImageRequestDTO.class);
 
-		AddressRequestDTO dto = objectMapper.readValue(request.getInputStream(), AddressRequestDTO.class);
-
-		ApiResponse apiResponse = addressService.updateAddress(dto, email);
+		ApiResponse apiResponse = productImageService.updateProductImage(dto);
 
 		response.setContentType("application/json");
 
@@ -85,16 +91,14 @@ public class AddressServlet extends HttpServlet {
 
 		if (pathInfo == null || pathInfo.equals("/")) {
 
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Address ID is required");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Image ID required");
 
 			return;
 		}
 
-		Long addressId = Long.parseLong(pathInfo.substring(1));
+		Long imageId = Long.parseLong(pathInfo.substring(1));
 
-		String email = (String) request.getAttribute("email");
-
-		ApiResponse apiResponse = addressService.deleteAddress(addressId, email);
+		ApiResponse apiResponse = productImageService.deleteProductImage(imageId);
 
 		response.setContentType("application/json");
 
