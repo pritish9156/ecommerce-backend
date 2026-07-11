@@ -66,9 +66,20 @@ public class CartServlet extends HttpServlet {
 
 		String email = (String) request.getAttribute("email");
 
+		String pathInfo = request.getPathInfo();
+
+		if (pathInfo == null || pathInfo.equals("/")) {
+
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cart Item ID is required");
+
+			return;
+		}
+
+		Long cartItemId = Long.parseLong(pathInfo.substring(1));
+
 		UpdateCartRequestDTO dto = objectMapper.readValue(request.getInputStream(), UpdateCartRequestDTO.class);
 
-		ApiResponse apiResponse = cartService.updateQuantity(dto.getCartItemId(), dto.getQuantity(), email);
+		ApiResponse apiResponse = cartService.updateQuantity(cartItemId, dto.getQuantity(), email);
 
 		response.setContentType("application/json");
 

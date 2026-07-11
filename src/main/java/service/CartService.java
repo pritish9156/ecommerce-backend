@@ -111,6 +111,10 @@ public class CartService {
 		if (quantity <= 0)
 			return new ApiResponse(false, "Quantity must be greater than zero.");
 
+		
+		System.out.println("Cart Item ID = " + cartItemId);
+		System.out.println("Quantity = " + quantity);
+		
 		CartItem cartItem = cartItemDAO.findById(cartItemId);
 
 		if (cartItem == null)

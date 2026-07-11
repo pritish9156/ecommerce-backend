@@ -84,4 +84,9 @@ public class ProductVariantService {
 		return updateStatus ? new ApiResponse(true, "Variant deactivated successfully.")
 				: new ApiResponse(false, "Unable to deactivate variant.");
 	}
+
+	public ProductVariant getVariant(Long id) {
+
+		return productVariantDAO.findById(id);
+	}
 }

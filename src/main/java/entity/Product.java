@@ -30,7 +30,11 @@ public class Product {
 	@JoinColumn(name = "brand_id")
 	private Brand brand;
 	
-	@Column(nullable = false, unique = true)
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+	private Category category;
+	
+	@Column(unique = true)
 	private String slug;
 	
 	@Column(nullable = false)
@@ -62,13 +66,15 @@ public class Product {
 	
 	}
 
-	public Product(Long id, String name, String description, Brand brand, String slug, boolean isActive,
-			double averageRating, int reviewCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
 
+	public Product(Long id, String name, String description, Brand brand, Category category, String slug,
+			boolean isActive, double averageRating, int reviewCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.brand = brand;
+		this.category = category;
 		this.slug = slug;
 		this.isActive = isActive;
 		this.averageRating = averageRating;
@@ -99,6 +105,14 @@ public class Product {
 
 	public void setBrand(Brand brand) {
 		this.brand = brand;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 
 	public String getSlug() {

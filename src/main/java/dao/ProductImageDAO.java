@@ -122,4 +122,41 @@ public class ProductImageDAO {
 
 		return images;
 	}
+
+	public ProductImage findFirstImageByProduct(Product product) {
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+
+		String hql = "FROM ProductImage WHERE product = :product ORDER BY displayOrder ASC";
+
+		Query<ProductImage> query = session.createQuery(hql, ProductImage.class);
+
+		query.setParameter("product", product);
+
+		query.setMaxResults(1);
+
+		ProductImage image = query.uniqueResult();
+
+		session.close();
+
+		return image;
+	}
+
+	public ProductImage findFirstByProduct(Product product) {
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+
+		String hql = """
+				FROM ProductImage
+				WHERE product = :product
+				ORDER BY displayOrder
+				""";
+
+		ProductImage image = session.createQuery(hql, ProductImage.class).setParameter("product", product)
+				.setMaxResults(1).uniqueResult();
+
+		session.close();
+
+		return image;
+	}
 }

@@ -110,4 +110,22 @@ public class OrderDAO {
 
 		return orders;
 	}
+	
+	public List<Order> findAll() {
+
+	    Session session =
+	            HibernateUtil
+	            .getSessionFactory()
+	            .openSession();
+
+	    List<Order> orders =
+	            session.createQuery(
+	                    "FROM Order ORDER BY createdAt DESC",
+	                    Order.class
+	            ).list();
+
+	    session.close();
+
+	    return orders;
+	}
 }

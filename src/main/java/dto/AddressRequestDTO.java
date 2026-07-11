@@ -104,4 +104,6 @@ public class AddressRequestDTO {
 	public void setDefault(boolean isDefault) {
 		this.isDefault = isDefault;
 	}
+
+	
 }

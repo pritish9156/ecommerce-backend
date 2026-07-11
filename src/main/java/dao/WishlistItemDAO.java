@@ -78,7 +78,7 @@ public class WishlistItemDAO {
 
 		Session session = HibernateUtil.getSessionFactory().openSession();
 
-		String hql = "FROM WishlistItem WHERE user = :user AND productVariant = :variant";
+		String hql = "FROM Wishlist WHERE user = :user AND productVariant = :variant";
 
 		Query<Wishlist> query = session.createQuery(hql, Wishlist.class);
 
@@ -96,7 +96,7 @@ public class WishlistItemDAO {
 
 		Session session = HibernateUtil.getSessionFactory().openSession();
 
-		String hql = "FROM WishlistItem WHERE user = :user ORDER BY createdAt DESC";
+		String hql = "FROM Wishlist WHERE user = :user ORDER BY createdAt DESC";
 
 		Query<Wishlist> query = session.createQuery(hql, Wishlist.class);
 

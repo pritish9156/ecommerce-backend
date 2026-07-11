@@ -27,6 +27,8 @@ public class CorsFilter implements Filter {
             FilterChain chain)
             throws IOException, ServletException {
 
+    	System.out.println("CORS Filter Executed");
+    	
         HttpServletResponse resp =
                 (HttpServletResponse) response;
 

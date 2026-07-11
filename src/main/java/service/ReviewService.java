@@ -39,6 +39,17 @@ public class ReviewService {
 			totalRating += r.getRating();
 		}
 
+		if (reviews.isEmpty()) {
+
+			variant.getProduct().setAverageRating(0);
+
+			variant.getProduct().setReviewCount(0);
+
+			productDAO.update(variant.getProduct());
+
+			return;
+		}
+
 		double averageRating = totalRating / reviews.size();
 
 		variant.getProduct().setAverageRating(averageRating);
@@ -66,7 +77,7 @@ public class ReviewService {
 		boolean isVerifiedPurchased = orderItemDAO.hasPurchasedVariant(user, variant);
 
 		if (!isVerifiedPurchased)
-			return new ApiResponse(false, ".");
+			return new ApiResponse(false, "You have not purchases this product yet.");
 
 		Review review = new Review();
 

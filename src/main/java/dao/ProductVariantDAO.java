@@ -125,4 +125,23 @@ public class ProductVariantDAO {
 
 		return variants;
 	}
+
+	public ProductVariant findLowestPriceVariant(Product product) {
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+
+		String hql = "FROM ProductVariant WHERE product = :product ORDER BY price ASC";
+
+		Query<ProductVariant> query = session.createQuery(hql, ProductVariant.class);
+
+		query.setParameter("product", product);
+
+		query.setMaxResults(1);
+
+		ProductVariant variant = query.uniqueResult();
+
+		session.close();
+
+		return variant;
+	}
 }

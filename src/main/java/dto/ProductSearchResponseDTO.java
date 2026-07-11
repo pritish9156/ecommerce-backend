@@ -6,7 +6,7 @@ import entity.Product;
 
 public class ProductSearchResponseDTO {
 
-    private List<Product> products;
+	private List<ProductCardResponseDTO> products;
     private Long totalRecords;
     private Integer totalPages;
     private Integer currentPage;
@@ -14,11 +14,11 @@ public class ProductSearchResponseDTO {
     public ProductSearchResponseDTO() {
     }
 
-    public List<Product> getProducts() {
+    public List<ProductCardResponseDTO> getProducts() {
         return products;
     }
 
-    public void setProducts(List<Product> products) {
+    public void setProducts(List<ProductCardResponseDTO> products) {
         this.products = products;
     }
 

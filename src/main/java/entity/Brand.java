@@ -23,7 +23,7 @@ public class Brand {
 	@Column(nullable = false, unique = true)
 	private String name;
 	
-	@Column(nullable = false, unique = true)
+	@Column(unique = true)
 	private String slug;
 	
 	private String logoUrl;

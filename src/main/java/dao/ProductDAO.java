@@ -168,7 +168,7 @@ public class ProductDAO {
 
 		Session session = HibernateUtil.getSessionFactory().openSession();
 
-		StringBuilder hql = new StringBuilder("FROM Product p WHERE p.isActive = true");
+		StringBuilder hql = new StringBuilder("SELECT COUNT(p) FROM Product p WHERE p.isActive = true");
 
 		if (keyword != null && !keyword.trim().isEmpty()) {
 

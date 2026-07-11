@@ -6,18 +6,20 @@ public class ProductRequestDTO {
 	private String name;
 	private String description;
 	private Long brandId;
+	private Long categoryId;
 	private String slug;
 	
 	public ProductRequestDTO() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ProductRequestDTO(Long id, String name, String description, Long brand, String slug) {
+	public ProductRequestDTO(Long id, String name, String description, Long brand, Long category, String slug) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.brandId = brand;
+		this.categoryId = category;
 		this.slug = slug;
 	}
 
@@ -53,6 +55,14 @@ public class ProductRequestDTO {
 		this.brandId = brand;
 	}
 
+	public Long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
+	}
+
 	public String getSlug() {
 		return slug;
 	}
@@ -64,7 +74,7 @@ public class ProductRequestDTO {
 	@Override
 	public String toString() {
 		return "ProductRequestDTO [id=" + id + ", name=" + name + ", description=" + description + ", brand=" + brandId
-				+ ", slug=" + slug + "]";
+				+ ", category=" + categoryId + ", slug=" + slug + "]";
 	}
 
 }

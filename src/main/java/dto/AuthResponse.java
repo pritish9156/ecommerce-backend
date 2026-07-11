@@ -2,20 +2,26 @@ package dto;
 
 public class AuthResponse {
 
-	private boolean success;
-	private String message;
-	private String token;
-	
-	public AuthResponse(boolean success, String message, String token) {
-		super();
-		this.success = success;
-		this.message = message;
-		this.token = token;
-	}
-	
-	public AuthResponse() {
+    private boolean success;
+    private String message;
+    private String token;
+    private String role;
 
-	}
+    public AuthResponse() {
+
+    }
+
+    public AuthResponse(
+            boolean success,
+            String message,
+            String token,
+            String role) {
+
+        this.success = success;
+        this.message = message;
+        this.token = token;
+        this.role = role;
+    }
 
 	public boolean isSuccess() {
 		return success;
@@ -41,9 +47,12 @@ public class AuthResponse {
 		this.token = token;
 	}
 
-	@Override
-	public String toString() {
-		return "AuthResponse [success=" + success + ", message=" + message + ", token=" + token + "]";
+	public String getRole() {
+		return role;
 	}
-	
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
 }

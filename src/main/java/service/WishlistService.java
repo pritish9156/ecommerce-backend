@@ -1,12 +1,16 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import dao.ProductImageDAO;
 import dao.ProductVariantDAO;
 import dao.UserDAO;
 import dao.WishlistItemDAO;
 import dto.ApiResponse;
 import dto.WishlistRequestDTO;
+import dto.WishlistResponseDTO;
+import entity.ProductImage;
 import entity.ProductVariant;
 import entity.User;
 import entity.Wishlist;
@@ -16,12 +20,14 @@ public class WishlistService {
 	private WishlistItemDAO wishlistItemDAO;
 	private UserDAO userDAO;
 	private ProductVariantDAO productVariantDAO;
+	private ProductImageDAO productImageDAO;
 
 	public WishlistService() {
 
 		wishlistItemDAO = new WishlistItemDAO();
 		userDAO = new UserDAO();
 		productVariantDAO = new ProductVariantDAO();
+		productImageDAO = new ProductImageDAO();
 	}
 
 	public ApiResponse addToWishlist(WishlistRequestDTO dto, String email) {
@@ -52,14 +58,44 @@ public class WishlistService {
 				: new ApiResponse(false, "Failed to add wishlist item.");
 	}
 
-	public List<Wishlist> getWishlist(String email) {
+	public List<WishlistResponseDTO> getWishlist(String email) {
 
 		User user = userDAO.findByEmail(email);
 
 		if (user == null)
 			return List.of();
 
-		return wishlistItemDAO.findByUser(user);
+		List<Wishlist> wishlist = wishlistItemDAO.findByUser(user);
+
+		List<WishlistResponseDTO> response = new ArrayList<>();
+
+		for (Wishlist item : wishlist) {
+
+			WishlistResponseDTO dto = new WishlistResponseDTO();
+
+			dto.setId(item.getId());
+
+			dto.setVariantId(item.getProductVariant().getId());
+
+			dto.setProductId(item.getProductVariant().getProduct().getId());
+
+			dto.setProductName(item.getProductVariant().getProduct().getName());
+
+			dto.setSku(item.getProductVariant().getSku());
+
+			dto.setPrice(item.getProductVariant().getPrice());
+
+			ProductImage image = productImageDAO.findFirstByProduct(item.getProductVariant().getProduct());
+
+			if (image != null) {
+
+				dto.setImageUrl(image.getImageUrl());
+			}
+
+			response.add(dto);
+		}
+
+		return response;
 	}
 
 	public ApiResponse removeFromWishlist(Long wishlistId, String email) {

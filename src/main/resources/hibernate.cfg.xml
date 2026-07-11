@@ -53,6 +53,7 @@
 		<mapping class="entity.Review"/>
 		<mapping class="entity.Wishlist"/>
 		<mapping class="auth.VerificationToken"/>
+		<mapping class="entity.Coupon"/>
 		
 	</session-factory>
 	

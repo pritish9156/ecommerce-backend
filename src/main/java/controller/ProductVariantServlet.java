@@ -31,9 +31,7 @@ public class ProductVariantServlet extends HttpServlet {
 		objectMapper = new ObjectMapper();
 
 		objectMapper.registerModule(new JavaTimeModule());
-		objectMapper.disable(
-			    SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
-			);
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 	}
 
 	@Override
@@ -50,6 +48,21 @@ public class ProductVariantServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+		String pathInfo = req.getPathInfo();
+
+		if (pathInfo != null && !pathInfo.equals("/")) {
+
+			Long id = Long.parseLong(pathInfo.substring(1));
+
+			ProductVariant variant = productVariantService.getVariant(id);
+
+			resp.setContentType("application/json");
+
+			objectMapper.writeValue(resp.getWriter(), variant);
+
+			return;
+		}
 
 		List<ProductVariant> variants = productVariantService.getAllVariants();
 

@@ -1,18 +1,22 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dao.BrandDAO;
+import dao.CategoryDAO;
 import dao.ProductDAO;
 import dao.ProductImageDAO;
 import dao.ProductVariantDAO;
 import dao.ReviewDAO;
 import dto.ApiResponse;
+import dto.ProductCardResponseDTO;
 import dto.ProductDetailsResponseDTO;
 import dto.ProductRequestDTO;
 import dto.ProductSearchRequestDTO;
 import dto.ProductSearchResponseDTO;
 import entity.Brand;
+import entity.Category;
 import entity.Product;
 import entity.ProductImage;
 import entity.ProductVariant;
@@ -22,6 +26,7 @@ public class ProductService {
 
 	private ProductDAO productDAO;
 	private BrandDAO brandDAO;
+	private CategoryDAO categoryDAO;
 	private ProductVariantDAO productVariantDAO;
 	private ProductImageDAO productImageDAO;
 	private ReviewDAO reviewDAO;
@@ -30,10 +35,16 @@ public class ProductService {
 
 		productDAO = new ProductDAO();
 		brandDAO = new BrandDAO();
+		categoryDAO = new CategoryDAO();
 		productVariantDAO = new ProductVariantDAO();
 		productImageDAO = new ProductImageDAO();
 		reviewDAO = new ReviewDAO();
 
+	}
+
+	private String generateSlug(String text) {
+
+		return text.toLowerCase().trim().replaceAll("\\s+", "-").replaceAll("[^a-z0-9-]", "");
 	}
 
 	public ApiResponse addProduct(ProductRequestDTO dto) {
@@ -58,13 +69,20 @@ public class ProductService {
 
 			return new ApiResponse(false, "Brand not found.");
 		}
+		
+		Category category = categoryDAO.findById(dto.getCategoryId());
+		
+		if (category == null) {
+			return new ApiResponse(false, "Category not found.");
+		}
 
 		Product product = new Product();
 
 		product.setName(dto.getName());
 		product.setDescription(dto.getDescription());
-		product.setSlug(dto.getSlug());
+		product.setSlug(generateSlug(dto.getName()));
 		product.setBrand(brand);
+		product.setCategory(category);
 
 		boolean saveStatus = productDAO.save(product);
 
@@ -135,6 +153,41 @@ public class ProductService {
 
 		List<Product> products = productDAO.searchProducts(dto.getKeyword(), dto.getBrandId(), page, size);
 
+		List<ProductCardResponseDTO> productCards = new ArrayList<>();
+
+		for (Product product : products) {
+
+			ProductCardResponseDTO card = new ProductCardResponseDTO();
+
+			card.setId(product.getId());
+
+			card.setName(product.getName());
+
+			card.setBrandName(product.getBrand().getName());
+
+			card.setAverageRating(product.getAverageRating());
+
+			card.setReviewCount(product.getReviewCount());
+
+			card.setSlug(product.getSlug());
+
+			ProductImage image = productImageDAO.findFirstImageByProduct(product);
+
+			if (image != null) {
+
+				card.setImageUrl(image.getImageUrl());
+			}
+
+			ProductVariant variant = productVariantDAO.findLowestPriceVariant(product);
+
+			if (variant != null) {
+
+				card.setStartingPrice(variant.getPrice().doubleValue());
+			}
+
+			productCards.add(card);
+		}
+
 		Long totalRecords = productDAO.countProducts(dto.getKeyword(), dto.getBrandId(), dto.getSortBy(),
 				dto.getSortDirection());
 
@@ -142,9 +195,12 @@ public class ProductService {
 
 		ProductSearchResponseDTO response = new ProductSearchResponseDTO();
 
-		response.setProducts(products);
+		response.setProducts(productCards);
+
 		response.setTotalRecords(totalRecords);
+
 		response.setTotalPages(totalPages);
+
 		response.setCurrentPage(page);
 
 		return response;
@@ -157,19 +213,25 @@ public class ProductService {
 		if (product == null)
 			return null;
 
-		List<ProductVariant> variants = productVariantDAO.findByProduct(product);
+		ProductDetailsResponseDTO dto = new ProductDetailsResponseDTO();
 
-		List<ProductImage> images = productImageDAO.findByProduct(product);
+		dto.setId(product.getId());
 
-		List<Review> reviews = reviewDAO.findByProduct(product);
+		dto.setName(product.getName());
 
-		ProductDetailsResponseDTO response = new ProductDetailsResponseDTO();
+		dto.setDescription(product.getDescription());
 
-		response.setProduct(product);
-		response.setVariants(variants);
-		response.setImages(images);
-		response.setReviews(reviews);
+		dto.setBrandName(product.getBrand().getName());
 
-		return response;
+		dto.setAverageRating(product.getAverageRating());
+
+		dto.setReviewCount(product.getReviewCount());
+
+		dto.setImages(productImageDAO.findByProduct(product));
+
+		dto.setVariants(productVariantDAO.findByProduct(product));
+
+		return dto;
 	}
+
 }

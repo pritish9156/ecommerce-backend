@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import dto.ApiResponse;
 import dto.WishlistRequestDTO;
+import dto.WishlistResponseDTO;
 import entity.Wishlist;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -56,7 +57,7 @@ public class WishlistServlet extends HttpServlet {
 
 		String email = (String) request.getAttribute("email");
 
-		List<Wishlist> wishlistItems = wishlistService.getWishlist(email);
+		List<WishlistResponseDTO> wishlistItems = wishlistService.getWishlist(email);
 
 		response.setContentType("application/json");
 

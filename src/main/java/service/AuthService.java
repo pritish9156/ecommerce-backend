@@ -223,21 +223,21 @@ public class AuthService {
 		User user = userDAO.findByEmail(request.getEmail());
 		
 		if(user == null) {
-			return new AuthResponse(false, "Invalid email or password", null);
+			return new AuthResponse(false, "Invalid email or password", null, null);
 		}
 		
 		boolean passwordStatus = BCryptUtil.verifyPassword(request.getPassword(), user.getPassword());
 		
 		if(passwordStatus==false) {
-			return new AuthResponse(false, "Invalid password", null);
+			return new AuthResponse(false, "Invalid password", null, null);
 		}
 		
 		if(!user.isEmailVerified()) {
-			return new AuthResponse(false, "Please verify your email before logging in.", null);
+			return new AuthResponse(false, "Please verify your email before logging in.", null, null);
 		}
 		
 		if(!user.isActive()) {
-			return new AuthResponse(false, "Account is disabled.", null);
+			return new AuthResponse(false, "Account is disabled.", null, null);
 		}
 		
 		String token = JwtUtil.generateToken(user);
@@ -245,7 +245,8 @@ public class AuthService {
 		return new AuthResponse(
 		        true,
 		        "Login successful",
-		        token
+		        token,
+		        user.getRole().name()
 		);
 	}
 

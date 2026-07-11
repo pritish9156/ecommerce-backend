@@ -71,6 +71,19 @@ public class ProductServlet extends HttpServlet {
 
 		String pathInfo = req.getPathInfo();
 
+		if (pathInfo != null && !pathInfo.equals("/")) {
+
+			Long productId = Long.parseLong(pathInfo.substring(1));
+
+			ProductDetailsResponseDTO dto = productService.getProductDetails(productId);
+
+			resp.setContentType("application/json");
+
+			objectMapper.writeValue(resp.getWriter(), dto);
+
+			return;
+		}
+
 		if (pathInfo != null && pathInfo.startsWith("/details/")) {
 
 			Long productId = Long.parseLong(pathInfo.replace("/details/", ""));

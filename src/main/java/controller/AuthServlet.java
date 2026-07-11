@@ -25,7 +25,6 @@ public class AuthServlet extends HttpServlet {
 
 	private AuthService authService;
 	private ObjectMapper objectMapper;
-	
 
 	@Override
 	public void init() {
@@ -34,9 +33,7 @@ public class AuthServlet extends HttpServlet {
 
 		objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
-		objectMapper.disable(
-			    SerializationFeature.WRITE_DATES_AS_TIMESTAMPS
-			);
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 	}
 
 	@Override
@@ -99,7 +96,7 @@ public class AuthServlet extends HttpServlet {
 	private void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
-	
+
 		AuthResponse authResponse = authService.login(loginRequest);
 
 		response.setContentType("application/json");

@@ -2,47 +2,93 @@ package dto;
 
 import java.util.List;
 
-import entity.Product;
 import entity.ProductImage;
 import entity.ProductVariant;
-import entity.Review;
 
 public class ProductDetailsResponseDTO {
 
-    private Product product;
-    private List<ProductVariant> variants;
-    private List<ProductImage> images;
-    private List<Review> reviews;
+	private Long id;
 
-    public Product getProduct() {
-        return product;
-    }
+	private String name;
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+	private String description;
 
-    public List<ProductVariant> getVariants() {
-        return variants;
-    }
+	private String brandName;
 
-    public void setVariants(List<ProductVariant> variants) {
-        this.variants = variants;
-    }
+	private Double averageRating;
 
-    public List<ProductImage> getImages() {
-        return images;
-    }
+	private Integer reviewCount;
 
-    public void setImages(List<ProductImage> images) {
-        this.images = images;
-    }
+	private List<ProductImage> images;
 
-    public List<Review> getReviews() {
-        return reviews;
-    }
+	private List<ProductVariant> variants;
 
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
+	public ProductDetailsResponseDTO() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getBrandName() {
+		return brandName;
+	}
+
+	public void setBrandName(String brandName) {
+		this.brandName = brandName;
+	}
+
+	public Double getAverageRating() {
+		return averageRating;
+	}
+
+	public void setAverageRating(Double averageRating) {
+		this.averageRating = averageRating;
+	}
+
+	public Integer getReviewCount() {
+		return reviewCount;
+	}
+
+	public void setReviewCount(Integer reviewCount) {
+		this.reviewCount = reviewCount;
+	}
+
+	public List<ProductImage> getImages() {
+		return images;
+	}
+
+	public void setImages(List<ProductImage> images) {
+		this.images = images;
+	}
+
+	public List<ProductVariant> getVariants() {
+		return variants;
+	}
+
+	public void setVariants(List<ProductVariant> variants) {
+		this.variants = variants;
+	}
+
+	
 }
