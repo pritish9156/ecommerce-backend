@@ -11,23 +11,25 @@ import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.MimeMessage;
-import service.EmailService;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
+import jakarta.activation.DataHandler;
 
 public class EmailUtil {
-	
+
 	private static Properties properties;
-	
+
 	static {
-		
-		InputStream inputStream = EmailUtil.class.getClassLoader()
-				.getResourceAsStream("application.properties");
-		
+
+		InputStream inputStream = EmailUtil.class.getClassLoader().getResourceAsStream("application.properties");
+
 		if (inputStream == null) {
-            throw new RuntimeException("Sorry, unable to find application.properties");
-        }
-		else {
+			throw new RuntimeException("Sorry, unable to find application.properties");
+		} else {
 			properties = new Properties();
-			
+
 			try {
 				properties.load(inputStream);
 			} catch (IOException e) {
@@ -37,58 +39,111 @@ public class EmailUtil {
 	}
 
 	public static void sendEmail(String recipientEmail, String subject, String body) {
-		
+
 		String username = properties.getProperty("mail.username");
-		
+
 		String password = properties.getProperty("mail.password");
-			
+
 		Properties smtpProperties = new Properties();
 
-		smtpProperties.put(
-		        "mail.smtp.host",
-		        properties.getProperty("mail.smtp.host"));
+		smtpProperties.put("mail.smtp.host", properties.getProperty("mail.smtp.host"));
 
-		smtpProperties.put(
-		        "mail.smtp.port",
-		        properties.getProperty("mail.smtp.port"));
+		smtpProperties.put("mail.smtp.port", properties.getProperty("mail.smtp.port"));
 
-		smtpProperties.put(
-		        "mail.smtp.auth",
-		        properties.getProperty("mail.smtp.auth"));
+		smtpProperties.put("mail.smtp.auth", properties.getProperty("mail.smtp.auth"));
 
-		smtpProperties.put(
-		        "mail.smtp.starttls.enable",
-		        properties.getProperty("mail.smtp.starttls.enable"));
-		
-		Session session = Session.getInstance(
-		        smtpProperties,
-		        new Authenticator() {
+		smtpProperties.put("mail.smtp.starttls.enable", properties.getProperty("mail.smtp.starttls.enable"));
 
-		            @Override
-		            protected PasswordAuthentication getPasswordAuthentication() {
+		Session session = Session.getInstance(smtpProperties, new Authenticator() {
 
-		                return new PasswordAuthentication(
-		                        username,
-		                        password
-		                );
-		            }
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
 
-		        });
-		
+				return new PasswordAuthentication(username, password);
+			}
+
+		});
+
 		MimeMessage message = new MimeMessage(session);
-		
+
 		try {
 			message.setFrom(username);
 			message.setRecipients(Message.RecipientType.TO, recipientEmail);
 			message.setSubject(subject);
 			message.setText(body);
-			
+
 			Transport.send(message);
 		} catch (MessagingException e) {
 			System.err.println("Failed to send email.");
 			e.printStackTrace();
 		}
-		
+
+	}
+
+	public static void sendEmailWithAttachment(String recipientEmail, String subject, String body, byte[] attachment,
+			String fileName) {
+
+		String username = properties.getProperty("mail.username");
+
+		String password = properties.getProperty("mail.password");
+
+		Properties smtpProperties = new Properties();
+
+		smtpProperties.put("mail.smtp.host", properties.getProperty("mail.smtp.host"));
+
+		smtpProperties.put("mail.smtp.port", properties.getProperty("mail.smtp.port"));
+
+		smtpProperties.put("mail.smtp.auth", properties.getProperty("mail.smtp.auth"));
+
+		smtpProperties.put("mail.smtp.starttls.enable", properties.getProperty("mail.smtp.starttls.enable"));
+
+		Session session = Session.getInstance(smtpProperties, new Authenticator() {
+
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {
+
+				return new PasswordAuthentication(username, password);
+			}
+		});
+
+		try {
+
+			MimeMessage message = new MimeMessage(session);
+
+			message.setFrom(username);
+
+			message.setRecipients(Message.RecipientType.TO, recipientEmail);
+
+			message.setSubject(subject);
+
+			MimeBodyPart textPart = new MimeBodyPart();
+
+			textPart.setText(body);
+
+			MimeBodyPart attachmentPart = new MimeBodyPart();
+
+			ByteArrayDataSource dataSource = new ByteArrayDataSource(attachment, "application/pdf");
+
+			attachmentPart.setDataHandler(new DataHandler(dataSource));
+
+			attachmentPart.setFileName(fileName);
+
+			Multipart multipart = new MimeMultipart();
+
+			multipart.addBodyPart(textPart);
+
+			multipart.addBodyPart(attachmentPart);
+
+			message.setContent(multipart);
+
+			Transport.send(message);
+
+		} catch (MessagingException e) {
+
+			System.err.println("Failed to send email with attachment.");
+
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -217,6 +217,11 @@ public class OrderService {
 
 		cartItemDAO.deleteAllByCart(cart);
 
+		PaymentMethod paymentMethod = PaymentMethod.valueOf(dto.getPaymentMethod());
+
+		if (paymentMethod == PaymentMethod.COD)
+			EmailService.sendOrderConfirmationEmail(order);
+
 		Map<String, Object> data = new HashMap<>();
 
 		data.put("orderId", order.getId());
@@ -304,15 +309,26 @@ public class OrderService {
 
 		boolean updated = orderDAO.update(order);
 
-		return updated
+		if (updated) {
 
-				?
+			EmailService.sendOrderStatusUpdateEmail(order);
 
-				new ApiResponse(true, "Order Updated")
+			if (newStatus == OrderStatus.DELIVERED) {
 
-				:
+				InvoiceService invoiceService = new InvoiceService();
 
-				new ApiResponse(false, "Update Failed");
+				byte[] invoicePdf = invoiceService.generateInvoice(order);
+
+				if (invoicePdf != null) {
+
+					EmailService.sendInvoiceEmail(order, invoicePdf);
+				}
+			}
+
+			return new ApiResponse(true, "Order status updated successfully.");
+		}
+
+		return new ApiResponse(false, "Failed to update order status.");
 	}
 
 	public OrderDetailsDTO getOrderDetails(Long orderId, String email) {
@@ -387,9 +403,16 @@ public class OrderService {
 
 		order.setOrderStatus(OrderStatus.CANCELLED);
 
-		orderDAO.update(order);
+		boolean updated = orderDAO.update(order);
 
-		return new ApiResponse(true, "Order Cancelled");
+		if (updated) {
+
+			EmailService.sendOrderCancelledEmail(order);
+
+			return new ApiResponse(true, "Order cancelled successfully.");
+		}
+
+		return new ApiResponse(false, "Unable to cancel order.");
 	}
 
 	public ApiResponse buyNow(BuyNowRequestDTO dto, String email) {
@@ -525,6 +548,11 @@ public class OrderService {
 
 		productVariantDAO.update(variant);
 
+		PaymentMethod paymentMethod = PaymentMethod.valueOf(dto.getPaymentMethod());
+
+		if (paymentMethod == PaymentMethod.COD)
+			EmailService.sendOrderConfirmationEmail(order);
+
 		return new ApiResponse(true, "Order placed successfully");
 	}
 
@@ -541,37 +569,27 @@ public class OrderService {
 
 		for (OrderItem item : items) {
 
-		    OrderItemResponseDTO itemDTO =
-		            new OrderItemResponseDTO();
+			OrderItemResponseDTO itemDTO = new OrderItemResponseDTO();
 
-		    ProductVariant variant =
-		            item.getProductVariant();
+			ProductVariant variant = item.getProductVariant();
 
-		    itemDTO.setId(item.getId());
+			itemDTO.setId(item.getId());
 
-		    itemDTO.setProductVariantId(variant.getId());
+			itemDTO.setProductVariantId(variant.getId());
 
-		    itemDTO.setSku(variant.getSku());
+			itemDTO.setSku(variant.getSku());
 
-		    itemDTO.setProductId(
-		            variant.getProduct().getId()
-		    );
+			itemDTO.setProductId(variant.getProduct().getId());
 
-		    itemDTO.setProductName(
-		            variant.getProduct().getName()
-		    );
+			itemDTO.setProductName(variant.getProduct().getName());
 
-		    itemDTO.setQuantity(item.getQuantity());
+			itemDTO.setQuantity(item.getQuantity());
 
-		    itemDTO.setPriceAtPurchase(
-		            item.getPriceAtPurchase()
-		    );
+			itemDTO.setPriceAtPurchase(item.getPriceAtPurchase());
 
-		    itemDTO.setSubtotal(
-		            item.getSubtotal()
-		    );
+			itemDTO.setSubtotal(item.getSubtotal());
 
-		    itemDTOs.add(itemDTO);
+			itemDTOs.add(itemDTO);
 		}
 
 		OrderDetailsDTO dto = new OrderDetailsDTO();
@@ -638,7 +656,7 @@ public class OrderService {
 
 		payment.setPaymentStatus(PaymentStatus.SUCCESS);
 
-		paymentDAO.update(payment);
+		boolean paymentUpdated = paymentDAO.update(payment);
 
 		Order order = payment.getOrder();
 
@@ -646,9 +664,17 @@ public class OrderService {
 
 		order.setPaymentStatus(PaymentStatus.SUCCESS);
 
-		orderDAO.update(order);
+		boolean orderUpdated = orderDAO.update(order);
 
-		return new ApiResponse(true, "Payment Success");
+		if (paymentUpdated && orderUpdated) {
+
+			EmailService.sendOrderConfirmationEmail(order);
+			EmailService.sendPaymentSuccessEmail(order);
+
+			return new ApiResponse(true, "Payment successful and order confirmed.");
+		}
+
+		return new ApiResponse(false, "Unable to complete payment confirmation.");
 	}
 
 	public ApiResponse markPaymentFailed(Long orderId) {
@@ -660,10 +686,22 @@ public class OrderService {
 
 		Payment payment = paymentDAO.findByOrder(order);
 
+		if (payment == null)
+			return new ApiResponse(false, "Payment not found.");
+
 		payment.setPaymentStatus(PaymentStatus.FAILED);
 
-		paymentDAO.update(payment);
+		boolean updated = paymentDAO.update(payment);
 
-		return new ApiResponse(true, "Payment Failed");
+		if (updated) {
+
+			EmailService.sendOrderConfirmationEmail(order);
+
+			EmailService.sendPaymentPendingEmail(order);
+
+			return new ApiResponse(true, "Payment failed. You can retry the payment or cancel the order.");
+		}
+
+		return new ApiResponse(false, "Unable to update payment status.");
 	}
 }
