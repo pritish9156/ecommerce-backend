@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import util.JwtUtil;
 
-@WebFilter({ "/address/*", "/cart/*", "/wishlist/*", "/orders/*", "/users/*", "/review/*", "/coupon/*", "/invoice/*" })
+@WebFilter({ "/address/*", "/cart/*", "/wishlist/*", "/orders/*", "/users/*", "/review/*", "/coupon/*", "/invoice/*", "/review-ai/*" })
 //@WebFilter("/*")
 public class JwtFilter implements Filter {
 
