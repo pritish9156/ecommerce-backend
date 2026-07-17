@@ -9,7 +9,7 @@ public class OrderDetailsDTO {
 
     private Order order;
 
-    private List<OrderItem> items;
+    private List<OrderItemResponseDTO> items;
 
     public OrderDetailsDTO() {
     }
@@ -22,12 +22,12 @@ public class OrderDetailsDTO {
         this.order = order;
     }
 
-    public List<OrderItem> getItems() {
+    public List<OrderItemResponseDTO> getItems() {
         return items;
     }
 
     public void setItems(
-            List<OrderItem> items) {
+            List<OrderItemResponseDTO> items) {
         this.items = items;
     }
 }

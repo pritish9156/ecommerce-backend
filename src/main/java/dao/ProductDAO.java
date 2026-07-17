@@ -69,7 +69,13 @@ public class ProductDAO {
 
 		Session session = HibernateUtil.getSessionFactory().openSession();
 
-		Product product = session.find(Product.class, id);
+		String hql = "SELECT DISTINCT p FROM Product p " + "LEFT JOIN FETCH p.tags " + "WHERE p.id = :id";
+
+		Query<Product> query = session.createQuery(hql, Product.class);
+
+		query.setParameter("id", id);
+
+		Product product = query.uniqueResult();
 
 		session.close();
 
@@ -114,7 +120,7 @@ public class ProductDAO {
 
 		Session session = HibernateUtil.getSessionFactory().openSession();
 
-		String hql = "FROM Product WHERE isActive = true";
+		String hql = "SELECT DISTINCT p FROM Product p " + "LEFT JOIN FETCH p.tags";
 
 		Query<Product> query = session.createQuery(hql, Product.class);
 
@@ -220,5 +226,25 @@ public class ProductDAO {
 		session.close();
 
 		return count;
+	}
+
+	public List<Product> findRelatedProducts(Long categoryId, Long currentProductId) {
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		String hql = "From Product p where p.category.id = :categoryId AND p.id <> :currentProductId AND isActive = true";
+	
+		Query<Product> query = session.createQuery(hql, Product.class);
+		
+		query.setParameter("categoryId", categoryId);
+		query.setParameter("currentProductId", currentProductId);
+
+		query.setMaxResults(8);
+		
+		List<Product> relatedProductList = query.getResultList();
+		
+		session.close();
+		
+		return relatedProductList;
 	}
 }

@@ -1,29 +1,23 @@
 package entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "tags")
+public class Tags {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "category_id")
+	@Column(name = "tag_id")
 	private Long id;
 	
 	@Column(nullable = false)
@@ -40,14 +34,6 @@ public class Category {
 	@Column(nullable = false)
     private LocalDateTime updatedAt;
     
-    @ManyToOne
-    @JoinColumn(name = "parent_category_id")
-    private Category parentCategory;
-    
-    @JsonIgnore
-    @OneToMany(mappedBy = "parentCategory")
-    private List<Category> subCategories;
-    
     @PrePersist
     public void preCreate() {
     	createdAt = LocalDateTime.now();
@@ -60,12 +46,12 @@ public class Category {
     	updatedAt = LocalDateTime.now();
     }
     
-    public Category() {
+    public Tags() {
 
 	}
 
-	public Category(Long id, String name, String description, boolean isActive, LocalDateTime createdAt,
-			LocalDateTime updatedAt, Category parentCategory, List<Category> subCategories) {
+	public Tags(Long id, String name, String description, boolean isActive, LocalDateTime createdAt,
+			LocalDateTime updatedAt) {
 
 		this.id = id;
 		this.name = name;
@@ -73,8 +59,6 @@ public class Category {
 		this.isActive = isActive;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
-		this.parentCategory = parentCategory;
-		this.subCategories = subCategories;
 	}
 
 	public Long getId() {
@@ -109,34 +93,26 @@ public class Category {
 		this.isActive = isActive;
 	}
 
-	public Category getParentCategory() {
-		return parentCategory;
-	}
-
-	public void setParentCategory(Category parentCategory) {
-		this.parentCategory = parentCategory;
-	}
-
-	public List<Category> getSubCategories() {
-		return subCategories;
-	}
-
-	public void setSubCategories(List<Category> subCategories) {
-		this.subCategories = subCategories;
-	}
-
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
 
 	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
 	}
 
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
 	@Override
 	public String toString() {
-		return "Category [id=" + id + ", name=" + name + ", description=" + description + ", isActive=" + isActive
+		return "Tags [id=" + id + ", name=" + name + ", description=" + description + ", isActive=" + isActive
 				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
-	}  
-    
+	}
+   
 }

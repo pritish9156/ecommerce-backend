@@ -54,6 +54,7 @@
 		<mapping class="entity.Wishlist"/>
 		<mapping class="auth.VerificationToken"/>
 		<mapping class="entity.Coupon"/>
+		<mapping class="entity.Tags"/>
 		
 	</session-factory>
 	

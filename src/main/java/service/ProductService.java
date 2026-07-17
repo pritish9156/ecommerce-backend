@@ -9,6 +9,7 @@ import dao.ProductDAO;
 import dao.ProductImageDAO;
 import dao.ProductVariantDAO;
 import dao.ReviewDAO;
+import dao.TagDAO;
 import dto.ApiResponse;
 import dto.ProductCardResponseDTO;
 import dto.ProductDetailsResponseDTO;
@@ -21,12 +22,14 @@ import entity.Product;
 import entity.ProductImage;
 import entity.ProductVariant;
 import entity.Review;
+import entity.Tags;
 
 public class ProductService {
 
 	private ProductDAO productDAO;
 	private BrandDAO brandDAO;
 	private CategoryDAO categoryDAO;
+	private TagDAO tagDAO;
 	private ProductVariantDAO productVariantDAO;
 	private ProductImageDAO productImageDAO;
 	private ReviewDAO reviewDAO;
@@ -39,6 +42,7 @@ public class ProductService {
 		productVariantDAO = new ProductVariantDAO();
 		productImageDAO = new ProductImageDAO();
 		reviewDAO = new ReviewDAO();
+		tagDAO = new TagDAO();
 
 	}
 
@@ -56,10 +60,11 @@ public class ProductService {
 			return new ApiResponse(false, "Product already exists.");
 		}
 
-		Product existingSlug = productDAO.findBySlug(dto.getSlug());
+		String slug = generateSlug(dto.getName());
+
+		Product existingSlug = productDAO.findBySlug(slug);
 
 		if (existingSlug != null) {
-
 			return new ApiResponse(false, "Product slug already exists.");
 		}
 
@@ -69,20 +74,37 @@ public class ProductService {
 
 			return new ApiResponse(false, "Brand not found.");
 		}
-		
+
 		Category category = categoryDAO.findById(dto.getCategoryId());
-		
+
 		if (category == null) {
 			return new ApiResponse(false, "Category not found.");
+		}
+
+		List<Tags> tags = new ArrayList<Tags>();
+
+		if (dto.getTagIds() != null) {
+
+			for (Long tagId : dto.getTagIds()) {
+
+				Tags tag = tagDAO.findById(tagId);
+
+				if (tag == null)
+					return new ApiResponse(false, "Tag not found with ID: " + tagId);
+
+				tags.add(tag);
+			}
+
 		}
 
 		Product product = new Product();
 
 		product.setName(dto.getName());
 		product.setDescription(dto.getDescription());
-		product.setSlug(generateSlug(dto.getName()));
+		product.setSlug(slug);
 		product.setBrand(brand);
 		product.setCategory(category);
+		product.setTags(tags);
 
 		boolean saveStatus = productDAO.save(product);
 
@@ -106,10 +128,35 @@ public class ProductService {
 			return new ApiResponse(false, "Brand not found.");
 		}
 
+		Category category = categoryDAO.findById(dto.getCategoryId());
+
+		if (category == null) {
+
+			return new ApiResponse(false, "Category not found.");
+		}
+
+		List<Tags> tags = new ArrayList<Tags>();
+
+		if (dto.getTagIds() != null) {
+
+			for (Long tagId : dto.getTagIds()) {
+
+				Tags tag = tagDAO.findById(tagId);
+
+				if (tag == null)
+					return new ApiResponse(false, "Tag not found with ID: " + tagId);
+
+				tags.add(tag);
+			}
+
+		}
+
 		product.setName(dto.getName());
 		product.setDescription(dto.getDescription());
 		product.setSlug(dto.getSlug());
 		product.setBrand(brand);
+		product.setCategory(category);
+		product.setTags(tags);
 
 		boolean updateStatus = productDAO.update(product);
 
@@ -227,11 +274,93 @@ public class ProductService {
 
 		dto.setReviewCount(product.getReviewCount());
 
+		if (product.getCategory() != null) {
+
+			dto.setCategoryId(product.getCategory().getId());
+
+			dto.setCategoryName(product.getCategory().getName());
+		}
+
+		List<Tags> tags = tagDAO.findByProductId(product.getId());
+
+		List<Long> tagIds = new ArrayList<>();
+
+		List<String> tagNames = new ArrayList<>();
+
+		for (Tags tag : tags) {
+
+		    tagIds.add(tag.getId());
+
+		    tagNames.add(tag.getName());
+		}
+
+		dto.setTagIds(tagIds);
+
+		dto.setTagNames(tagNames);
+		
 		dto.setImages(productImageDAO.findByProduct(product));
 
 		dto.setVariants(productVariantDAO.findByProduct(product));
 
 		return dto;
+	}
+	
+	public ApiResponse getRelatedProducts(Long productId) {
+		
+		Product product = productDAO.findById(productId);
+		
+		if(product == null)
+			return new ApiResponse(false, "product not found.");
+		
+		Long categoryId = product.getCategory().getId();
+		
+		Category category = categoryDAO.findById(categoryId);
+		
+		if(category == null)
+			return new ApiResponse(false, "category not found.");
+		
+		List<Product> relatedProducts = productDAO.findRelatedProducts(categoryId, productId);
+
+		List<ProductCardResponseDTO> productCards = new ArrayList<ProductCardResponseDTO>();
+		
+		for(Product p : relatedProducts) {
+			
+			ProductCardResponseDTO card = new ProductCardResponseDTO();
+
+			card.setId(p.getId());
+
+			card.setName(p.getName());
+
+			card.setBrandName(p.getBrand().getName());
+
+			card.setAverageRating(p.getAverageRating());
+
+			card.setReviewCount(p.getReviewCount());
+
+			card.setSlug(p.getSlug());
+
+			ProductImage image = productImageDAO.findFirstImageByProduct(p);
+
+			if (image != null) {
+
+				card.setImageUrl(image.getImageUrl());
+			}
+
+			ProductVariant variant = productVariantDAO.findLowestPriceVariant(p);
+
+			if (variant != null) {
+
+				card.setStartingPrice(variant.getPrice().doubleValue());
+			}
+			
+			productCards.add(card);
+			
+		}
+		
+		if(productCards.isEmpty())
+			return new ApiResponse(true, "No related products found.", productCards);
+		else
+			return new ApiResponse(true, "related products fetched successfully.", productCards);
 	}
 
 }

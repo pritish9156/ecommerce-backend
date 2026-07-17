@@ -70,6 +70,32 @@ public class ProductServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		String pathInfo = req.getPathInfo();
+		
+		if (pathInfo != null && pathInfo.startsWith("/details/")) {
+
+			Long productId = Long.parseLong(pathInfo.replace("/details/", ""));
+
+			ProductDetailsResponseDTO responseDto = productService.getProductDetails(productId);
+
+			resp.setContentType("application/json");
+
+			objectMapper.writeValue(resp.getWriter(), responseDto);
+
+			return;
+		}
+		
+		if (pathInfo != null && pathInfo.startsWith("/related-products/")) {
+
+			Long productId = Long.parseLong(pathInfo.replace("/related-products/", ""));
+
+			ApiResponse response = productService.getRelatedProducts(productId);
+
+			resp.setContentType("application/json");
+
+			objectMapper.writeValue(resp.getWriter(), response);
+
+			return;
+		}
 
 		if (pathInfo != null && !pathInfo.equals("/")) {
 
@@ -80,19 +106,6 @@ public class ProductServlet extends HttpServlet {
 			resp.setContentType("application/json");
 
 			objectMapper.writeValue(resp.getWriter(), dto);
-
-			return;
-		}
-
-		if (pathInfo != null && pathInfo.startsWith("/details/")) {
-
-			Long productId = Long.parseLong(pathInfo.replace("/details/", ""));
-
-			ProductDetailsResponseDTO responseDto = productService.getProductDetails(productId);
-
-			resp.setContentType("application/json");
-
-			objectMapper.writeValue(resp.getWriter(), responseDto);
 
 			return;
 		}

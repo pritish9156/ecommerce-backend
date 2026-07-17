@@ -1,12 +1,16 @@
 package entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -33,6 +37,14 @@ public class Product {
 	@ManyToOne
 	@JoinColumn(name = "category_id")
 	private Category category;
+	
+	@ManyToMany
+	@JoinTable(
+		    name = "product_tags",
+		    joinColumns = @JoinColumn(name = "product_id"),
+		    inverseJoinColumns = @JoinColumn(name = "tag_id")
+		)
+	private List<Tags> tags; 
 	
 	@Column(unique = true)
 	private String slug;
@@ -66,15 +78,16 @@ public class Product {
 	
 	}
 
-
-	public Product(Long id, String name, String description, Brand brand, Category category, String slug,
-			boolean isActive, double averageRating, int reviewCount, LocalDateTime createdAt, LocalDateTime updatedAt) {
+	public Product(Long id, String name, String description, Brand brand, Category category, List<Tags> tags,
+			String slug, boolean isActive, double averageRating, int reviewCount, LocalDateTime createdAt,
+			LocalDateTime updatedAt) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.brand = brand;
 		this.category = category;
+		this.tags = tags;
 		this.slug = slug;
 		this.isActive = isActive;
 		this.averageRating = averageRating;
@@ -157,6 +170,14 @@ public class Product {
 
 	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
+	}
+
+	public List<Tags> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<Tags> tags) {
+		this.tags = tags;
 	}
 
 	@Override

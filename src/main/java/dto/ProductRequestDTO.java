@@ -1,5 +1,7 @@
 package dto;
 
+import java.util.List;
+
 public class ProductRequestDTO {
 	
 	private Long id;
@@ -8,19 +10,22 @@ public class ProductRequestDTO {
 	private Long brandId;
 	private Long categoryId;
 	private String slug;
+	private List<Long> tagIds;
 	
 	public ProductRequestDTO() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ProductRequestDTO(Long id, String name, String description, Long brand, Long category, String slug) {
-		super();
+	public ProductRequestDTO(Long id, String name, String description, Long brandId, Long categoryId, String slug,
+			List<Long> tagIds) {
+
 		this.id = id;
 		this.name = name;
 		this.description = description;
-		this.brandId = brand;
-		this.categoryId = category;
+		this.brandId = brandId;
+		this.categoryId = categoryId;
 		this.slug = slug;
+		this.tagIds = tagIds;
 	}
 
 	public Long getId() {
@@ -69,6 +74,14 @@ public class ProductRequestDTO {
 
 	public void setSlug(String slug) {
 		this.slug = slug;
+	}
+
+	public List<Long> getTagIds() {
+		return tagIds;
+	}
+
+	public void setTagIds(List<Long> tagIds) {
+		this.tagIds = tagIds;
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package dto;
 
 import java.util.List;
-
 import entity.ProductImage;
 import entity.ProductVariant;
 
@@ -18,6 +17,14 @@ public class ProductDetailsResponseDTO {
 	private Double averageRating;
 
 	private Integer reviewCount;
+	
+	private Long categoryId;
+
+	private String categoryName;
+
+	private List<Long> tagIds;
+
+	private List<String> tagNames;
 
 	private List<ProductImage> images;
 
@@ -90,5 +97,35 @@ public class ProductDetailsResponseDTO {
 		this.variants = variants;
 	}
 
-	
+	public Long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public String getCategoryName() {
+		return categoryName;
+	}
+
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
+
+	public List<Long> getTagIds() {
+		return tagIds;
+	}
+
+	public void setTagIds(List<Long> tagIds) {
+		this.tagIds = tagIds;
+	}
+
+	public List<String> getTagNames() {
+		return tagNames;
+	}
+
+	public void setTagNames(List<String> tagNames) {
+		this.tagNames = tagNames;
+	}
 }

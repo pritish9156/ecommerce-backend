@@ -21,8 +21,33 @@ public class CategoryService {
 
 		Category category = categoryDAO.findByName(dto.getName());
 
-		if (category != null)
+		if (category != null) {
+			
+			if(!category.isActive()) {
+				category.setDescription(dto.getDescription());
+				
+				if (dto.getParentCategoryId() != null) {
+					Category parent = categoryDAO.findById(dto.getParentCategoryId());
+
+					if (parent == null)
+						return new ApiResponse(false, "parent category not found.");
+
+					category.setParentCategory(parent);
+				}
+				
+				category.setActive(true);
+				
+				Boolean status = categoryDAO.update(category);
+				
+				if(status)	
+					return new ApiResponse(true, "category added successfully.");
+				else
+					return new ApiResponse(false, "category failed to add");
+			}
+			
 			return new ApiResponse(false, "category already exists.");
+			
+		}
 
 		category = new Category();
 
@@ -74,7 +99,7 @@ public class CategoryService {
 			if (parent.getId().equals(category.getId()))
 				return new ApiResponse(false, "parent category cannot be same as sub category.");
 
-			if (parent.getId().equals(category.getParentCategory().getId()))
+			if (category.getParentCategory() != null && parent.getId().equals(category.getParentCategory().getId()))
 				return new ApiResponse(false, "already same parent category.");
 
 			category.setParentCategory(parent);
@@ -106,7 +131,8 @@ public class CategoryService {
 				dto.setParentCategoryName(category.getParentCategory().getName());
 			}
 			
-			categoryList.add(dto);
+			if(category.isActive())
+				categoryList.add(dto);
 		}
 
 		return new ApiResponse(true, "Fetched successfully", categoryList);

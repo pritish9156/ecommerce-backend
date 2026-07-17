@@ -1,5 +1,6 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dao.CartDAO;
@@ -8,8 +9,10 @@ import dao.ProductVariantDAO;
 import dao.UserDAO;
 import dto.AddToCartRequestDTO;
 import dto.ApiResponse;
+import dto.CartItemResponseDTO;
 import entity.Cart;
 import entity.CartItem;
+import entity.Product;
 import entity.ProductVariant;
 import entity.User;
 
@@ -85,7 +88,7 @@ public class CartService {
 
 	}
 
-	public List<CartItem> getCart(String email) {
+	public List<CartItemResponseDTO> getCart(String email) {
 
 		User user = userDAO.findByEmail(email);
 
@@ -97,7 +100,36 @@ public class CartService {
 		if (cart == null)
 			return List.of();
 
-		return cartItemDAO.findByCart(cart);
+		List<CartItem> cartItems = cartItemDAO.findByCart(cart);
+
+		List<CartItemResponseDTO> responseList = new ArrayList<>();
+
+		for (CartItem item : cartItems) {
+
+			CartItemResponseDTO dto = new CartItemResponseDTO();
+
+			dto.setId(item.getId());
+
+			dto.setQuantity(item.getQuantity());
+
+			ProductVariant variant = item.getProductVariant();
+
+			dto.setProductVariantId(variant.getId());
+
+			dto.setSku(variant.getSku());
+
+			dto.setPrice(variant.getPrice());
+
+			Product product = variant.getProduct();
+
+			dto.setProductId(product.getId());
+
+			dto.setProductName(product.getName());
+
+			responseList.add(dto);
+		}
+
+		return responseList;
 	}
 
 	public ApiResponse updateQuantity(Long cartItemId, Integer quantity, String email) {
@@ -111,10 +143,9 @@ public class CartService {
 		if (quantity <= 0)
 			return new ApiResponse(false, "Quantity must be greater than zero.");
 
-		
 		System.out.println("Cart Item ID = " + cartItemId);
 		System.out.println("Quantity = " + quantity);
-		
+
 		CartItem cartItem = cartItemDAO.findById(cartItemId);
 
 		if (cartItem == null)
@@ -171,7 +202,7 @@ public class CartService {
 
 		if (cart == null)
 			return new ApiResponse(false, "Cart not found.");
-		
+
 		if (!cart.getUser().getId().equals(user.getId())) {
 			return new ApiResponse(false, "Unauthorized access.");
 		}

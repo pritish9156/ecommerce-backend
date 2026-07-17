@@ -1,6 +1,7 @@
 package service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import dao.UserDAO;
 import dto.ApiResponse;
 import dto.BuyNowRequestDTO;
 import dto.OrderDetailsDTO;
+import dto.OrderItemResponseDTO;
 import dto.PlaceOrderRequestDTO;
 import dto.RazorpayOrderResponseDTO;
 import dto.RazorpaySuccessDTO;
@@ -327,11 +329,37 @@ public class OrderService {
 
 		List<OrderItem> items = orderItemDAO.findByOrder(order);
 
+		List<OrderItemResponseDTO> itemDTOs = new ArrayList<>();
+
+		for (OrderItem item : items) {
+
+			OrderItemResponseDTO itemDTO = new OrderItemResponseDTO();
+
+			ProductVariant variant = item.getProductVariant();
+
+			itemDTO.setId(item.getId());
+
+			itemDTO.setProductVariantId(variant.getId());
+
+			itemDTO.setSku(variant.getSku());
+
+			itemDTO.setProductId(variant.getProduct().getId());
+
+			itemDTO.setProductName(variant.getProduct().getName());
+
+			itemDTO.setQuantity(item.getQuantity());
+
+			itemDTO.setPriceAtPurchase(item.getPriceAtPurchase());
+
+			itemDTO.setSubtotal(item.getSubtotal());
+
+			itemDTOs.add(itemDTO);
+		}
+
 		OrderDetailsDTO dto = new OrderDetailsDTO();
 
 		dto.setOrder(order);
-
-		dto.setItems(items);
+		dto.setItems(itemDTOs);
 
 		return dto;
 	}
@@ -509,11 +537,47 @@ public class OrderService {
 
 		List<OrderItem> items = orderItemDAO.findByOrder(order);
 
+		List<OrderItemResponseDTO> itemDTOs = new ArrayList<>();
+
+		for (OrderItem item : items) {
+
+		    OrderItemResponseDTO itemDTO =
+		            new OrderItemResponseDTO();
+
+		    ProductVariant variant =
+		            item.getProductVariant();
+
+		    itemDTO.setId(item.getId());
+
+		    itemDTO.setProductVariantId(variant.getId());
+
+		    itemDTO.setSku(variant.getSku());
+
+		    itemDTO.setProductId(
+		            variant.getProduct().getId()
+		    );
+
+		    itemDTO.setProductName(
+		            variant.getProduct().getName()
+		    );
+
+		    itemDTO.setQuantity(item.getQuantity());
+
+		    itemDTO.setPriceAtPurchase(
+		            item.getPriceAtPurchase()
+		    );
+
+		    itemDTO.setSubtotal(
+		            item.getSubtotal()
+		    );
+
+		    itemDTOs.add(itemDTO);
+		}
+
 		OrderDetailsDTO dto = new OrderDetailsDTO();
 
 		dto.setOrder(order);
-
-		dto.setItems(items);
+		dto.setItems(itemDTOs);
 
 		return dto;
 	}

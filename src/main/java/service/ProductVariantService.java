@@ -1,11 +1,13 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dao.ProductDAO;
 import dao.ProductVariantDAO;
 import dto.ApiResponse;
 import dto.ProductVariantRequestDTO;
+import dto.ProductVariantResponseDTO;
 import entity.Product;
 import entity.ProductVariant;
 
@@ -63,11 +65,36 @@ public class ProductVariantService {
 				: new ApiResponse(false, "Unable to update product variant.");
 	}
 
-	public List<ProductVariant> getAllVariants() {
+	public List<ProductVariantResponseDTO> getAllVariants() {
 
 		List<ProductVariant> variants = productVariantDAO.findAll();
 
-		return variants == null ? List.of() : variants;
+		List<ProductVariantResponseDTO> variantDTOs = new ArrayList<>();
+
+		for (ProductVariant variant : variants) {
+
+			ProductVariantResponseDTO dto = new ProductVariantResponseDTO();
+
+			dto.setId(variant.getId());
+
+			dto.setProductId(variant.getProduct().getId());
+
+			dto.setProductName(variant.getProduct().getName());
+
+			dto.setSku(variant.getSku());
+
+			dto.setPrice(variant.getPrice());
+
+			dto.setDiscountPercentage(variant.getDiscountPercentage());
+
+			dto.setStock(variant.getStock());
+
+			dto.setActive(variant.isActive());
+
+			variantDTOs.add(dto);
+		}
+
+		return variantDTOs;
 	}
 
 	public ApiResponse deactivateVariant(Long variantId) {

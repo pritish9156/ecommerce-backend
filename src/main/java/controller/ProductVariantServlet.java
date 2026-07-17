@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import dto.ApiResponse;
 import dto.ProductVariantRequestDTO;
+import dto.ProductVariantResponseDTO;
 import entity.ProductVariant;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -64,7 +65,7 @@ public class ProductVariantServlet extends HttpServlet {
 			return;
 		}
 
-		List<ProductVariant> variants = productVariantService.getAllVariants();
+		 List<ProductVariantResponseDTO> variants = productVariantService.getAllVariants();
 
 		resp.setContentType("application/json");
 
