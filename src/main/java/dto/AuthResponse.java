@@ -6,6 +6,7 @@ public class AuthResponse {
     private String message;
     private String token;
     private String role;
+    private Long userId;
 
     public AuthResponse() {
 
@@ -15,12 +16,14 @@ public class AuthResponse {
             boolean success,
             String message,
             String token,
-            String role) {
+            String role,
+            Long userId) {
 
         this.success = success;
         this.message = message;
         this.token = token;
         this.role = role;
+        this.userId = userId;
     }
 
 	public boolean isSuccess() {
@@ -53,6 +56,14 @@ public class AuthResponse {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+	
+	public Long getUserId() {
+	    return userId;
+	}
+
+	public void setUserId(Long userId) {
+	    this.userId = userId;
 	}
 
 }

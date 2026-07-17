@@ -164,4 +164,26 @@ public class ReviewDAO {
 
 		return reviews;
 	}
+
+	public Review findByUserAndProduct(User user, Product product) {
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+
+		try {
+
+			String hql = """
+					SELECT r
+					FROM Review r
+					WHERE r.user.id = :userId
+					AND r.productVariant.product.id = :productId
+					""";
+
+			return session.createQuery(hql, Review.class).setParameter("userId", user.getId())
+					.setParameter("productId", product.getId()).setMaxResults(1).uniqueResult();
+
+		} finally {
+
+			session.close();
+		}
+	}
 }

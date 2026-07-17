@@ -15,7 +15,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import util.JwtUtil;
 
-@WebFilter({ "/address/*", "/cart/*", "/wishlist/*", "/orders/*", "/users/*", "/review/*", "/coupon/*", "/invoice/*", "/review-ai/*" })
+@WebFilter({ "/address/*", "/cart/*", "/wishlist/*", "/orders/*", "/users/*", "/review/*", "/coupon/*", "/invoice/*",
+		"/review-ai/*" })
 //@WebFilter("/*")
 public class JwtFilter implements Filter {
 
@@ -31,13 +32,24 @@ public class JwtFilter implements Filter {
 			throws IOException, ServletException {
 
 		System.out.println("JWT FILTER HIT");
-		
+
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 
+		// Allow anyone to VIEW product reviews
+		if ("GET".equalsIgnoreCase(httpRequest.getMethod())
+				&& httpRequest.getRequestURI().startsWith(httpRequest.getContextPath() + "/review/")) {
+
+			chain.doFilter(request, response);
+
+			return;
+		}
+
+		// Everything below requires login
+
 		String authHeader = httpRequest.getHeader("Authorization");
-		
+
 		System.out.println("HEADER = " + authHeader);
 
 		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -59,13 +71,12 @@ public class JwtFilter implements Filter {
 		String email = JwtUtil.extractEmail(token);
 
 		User user = userDAO.findByEmail(email);
-		
+
 		httpRequest.setAttribute("email", email);
 
 		httpRequest.setAttribute("user", user);
 
 		chain.doFilter(request, response);
-
 	}
 
 	@Override

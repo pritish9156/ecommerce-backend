@@ -8,8 +8,10 @@ import org.hibernate.query.Query;
 
 import entity.Order;
 import entity.OrderItem;
+import entity.Product;
 import entity.ProductVariant;
 import entity.User;
+import entity.enums.OrderStatus;
 import util.HibernateUtil;
 
 public class OrderItemDAO {
@@ -91,5 +93,31 @@ public class OrderItemDAO {
 		session.close();
 
 		return count != null && count > 0;
+	}
+
+	public boolean hasPurchasedProduct(User user, Product product) {
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+
+		try {
+
+			String hql = """
+					SELECT COUNT(oi)
+					FROM OrderItem oi
+					WHERE oi.order.user.id = :userId
+					AND oi.productVariant.product.id = :productId
+					AND oi.order.orderStatus = :orderStatus
+					""";
+
+			Long count = session.createQuery(hql, Long.class).setParameter("userId", user.getId())
+					.setParameter("productId", product.getId()).setParameter("orderStatus", OrderStatus.DELIVERED)
+					.uniqueResult();
+
+			return count != null && count > 0;
+
+		} finally {
+
+			session.close();
+		}
 	}
 }

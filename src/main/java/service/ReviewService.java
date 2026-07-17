@@ -64,20 +64,25 @@ public class ReviewService {
 
 		User user = userDAO.findByEmail(email);
 
-		ProductVariant variant = productVariantDAO.findById(dto.getProductVariantId());
-
 		if (user == null)
 			return new ApiResponse(false, "user not found");
 
-		Review existingReview = reviewDAO.findByUserAndVariant(user, variant);
+		ProductVariant variant = productVariantDAO.findById(dto.getProductVariantId());
+
+		if (variant == null) {
+
+			return new ApiResponse(false, "Product variant not found.");
+		}
+
+		Review existingReview = reviewDAO.findByUserAndProduct(user, variant.getProduct());
 
 		if (existingReview != null)
 			return new ApiResponse(false, "You already reviewed this product.");
 
-		boolean isVerifiedPurchased = orderItemDAO.hasPurchasedVariant(user, variant);
+		boolean isVerifiedPurchased = orderItemDAO.hasPurchasedProduct(user, variant.getProduct());
 
 		if (!isVerifiedPurchased)
-			return new ApiResponse(false, "You have not purchases this product yet.");
+			return new ApiResponse(false, "You can review this product after your order has been delivered.");
 
 		Review review = new Review();
 

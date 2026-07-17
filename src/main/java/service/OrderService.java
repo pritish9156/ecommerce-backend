@@ -553,7 +553,7 @@ public class OrderService {
 		if (paymentMethod == PaymentMethod.COD)
 			EmailService.sendOrderConfirmationEmail(order);
 
-		return new ApiResponse(true, "Order placed successfully");
+		return new ApiResponse(true, "Order placed successfully", Map.of("orderId", order.getId()));
 	}
 
 	public OrderDetailsDTO getAdminOrderDetails(Long orderId) {
