@@ -56,7 +56,7 @@ public class ProductVariantServlet extends HttpServlet {
 
 			Long id = Long.parseLong(pathInfo.substring(1));
 
-			ProductVariant variant = productVariantService.getVariant(id);
+			 ProductVariantResponseDTO variant = productVariantService.getVariant(id);
 
 			resp.setContentType("application/json");
 

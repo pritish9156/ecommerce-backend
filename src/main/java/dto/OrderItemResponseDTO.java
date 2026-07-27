@@ -12,6 +12,7 @@ public class OrderItemResponseDTO {
     private Integer quantity;
     private BigDecimal priceAtPurchase;
     private BigDecimal subtotal;
+    private String imageUrl;
     
 	public Long getId() {
 		return id;
@@ -73,6 +74,14 @@ public class OrderItemResponseDTO {
 	
 	public void setSubtotal(BigDecimal subtotal) {
 		this.subtotal = subtotal;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 }

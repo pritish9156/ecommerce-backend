@@ -29,15 +29,13 @@ public class DashboardServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+		response.setContentType("application/json");
+
 		String type = request.getParameter("type");
 
 		if ("low-stock".equals(type)) {
 
-			objectMapper.writeValue(
-
-					response.getWriter(),
-
-					dashboardService.getLowStockProducts());
+			objectMapper.writeValue(response.getWriter(), dashboardService.getLowStockProducts());
 
 			return;
 		}
@@ -50,8 +48,6 @@ public class DashboardServlet extends HttpServlet {
 		}
 
 		AdminDashboardDTO dto = dashboardService.getDashboardStats();
-
-		response.setContentType("application/json");
 
 		objectMapper.writeValue(response.getWriter(), dto);
 	}

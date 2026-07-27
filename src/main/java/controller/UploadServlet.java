@@ -13,159 +13,107 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
 @WebServlet("/upload/*")
-@MultipartConfig(
-        fileSizeThreshold = 1024 * 1024,
-        maxFileSize = 1024 * 1024 * 10,
-        maxRequestSize = 1024 * 1024 * 20
-)
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 20)
 public class UploadServlet extends HttpServlet {
 
-    private ObjectMapper objectMapper;
+	private ObjectMapper objectMapper;
 
-    @Override
-    public void init() {
+	private static final String UPLOAD_ROOT = "E:" + File.separator + "ShopSphereUploads";
 
-        objectMapper = new ObjectMapper();
-    }
+	@Override
+	public void init() {
 
-    @Override
-    protected void doPost(
-            jakarta.servlet.http.HttpServletRequest request,
-            jakarta.servlet.http.HttpServletResponse response)
-            throws ServletException, IOException {
+		objectMapper = new ObjectMapper();
+	}
 
-        String path = request.getPathInfo();
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-        switch (path) {
+		String path = request.getPathInfo();
 
-        case "/brand":
+		switch (path) {
 
-            uploadBrandImage(request, response);
+		case "/brand":
 
-            break;
+			uploadBrandImage(request, response);
 
-        case "/product":
+			break;
 
-            uploadProductImage(request, response);
+		case "/product":
 
-            break;
+			uploadProductImage(request, response);
 
-        default:
+			break;
 
-            response.sendError(404);
-        }
-    }
+		default:
 
-    private void uploadBrandImage(
-            jakarta.servlet.http.HttpServletRequest request,
-            jakarta.servlet.http.HttpServletResponse response)
-            throws IOException, ServletException {
+			response.sendError(404);
+		}
+	}
 
-        Part part = request.getPart("image");
+	private void uploadBrandImage(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
 
-        String fileName =
-                UUID.randomUUID()
-                + "_"
-                + Paths.get(
-                        part.getSubmittedFileName())
-                        .getFileName()
-                        .toString();
+		Part part = request.getPart("image");
 
-        String uploadPath =
-                getServletContext()
-                .getRealPath("")
-                + File.separator
-                + "uploads"
-                + File.separator
-                + "brands";
+		String fileName = UUID.randomUUID() + "_" + Paths.get(part.getSubmittedFileName()).getFileName().toString();
 
-        File directory =
-                new File(uploadPath);
+//		String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator
+//				+ "brands";
 
-        if (!directory.exists()) {
+		String uploadPath = UPLOAD_ROOT + File.separator + "brands";
 
-            directory.mkdirs();
-        }
+		File directory = new File(uploadPath);
 
-        part.write(
-                uploadPath
-                + File.separator
-                + fileName);
+		if (!directory.exists()) {
 
-        String imageUrl =
-                "/uploads/brands/"
-                + fileName;
+			directory.mkdirs();
+		}
 
-        response.setContentType(
-                "application/json");
+		part.write(uploadPath + File.separator + fileName);
 
-        UploadResponse uploadResponse =
-                new UploadResponse(
-                        true,
-                        imageUrl
-                );
+		String imageUrl = "/uploads/brands/" + fileName;
 
-        objectMapper.writeValue(
-                response.getWriter(),
-                uploadResponse
-        );
-    }
+		response.setContentType("application/json");
 
-    private void uploadProductImage(
-            jakarta.servlet.http.HttpServletRequest request,
-            jakarta.servlet.http.HttpServletResponse response)
-            throws IOException, ServletException {
+		UploadResponse uploadResponse = new UploadResponse(true, imageUrl);
 
-        Part part = request.getPart("image");
+		objectMapper.writeValue(response.getWriter(), uploadResponse);
+	}
 
-        String fileName =
-                UUID.randomUUID()
-                + "_"
-                + Paths.get(
-                        part.getSubmittedFileName())
-                        .getFileName()
-                        .toString();
+	private void uploadProductImage(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
 
-        String uploadPath =
-                getServletContext()
-                .getRealPath("")
-                + File.separator
-                + "uploads"
-                + File.separator
-                + "products";
+		Part part = request.getPart("image");
 
-        File directory =
-                new File(uploadPath);
+		String fileName = UUID.randomUUID() + "_" + Paths.get(part.getSubmittedFileName()).getFileName().toString();
 
-        if (!directory.exists()) {
+//		String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator
+//				+ "products";
 
-            directory.mkdirs();
-        }
+		String uploadPath = UPLOAD_ROOT + File.separator + "products";
 
-        part.write(
-                uploadPath
-                + File.separator
-                + fileName);
+		File directory = new File(uploadPath);
 
-        String imageUrl =
-                "/uploads/products/"
-                + fileName;
+		if (!directory.exists()) {
 
-        response.setContentType(
-                "application/json");
+			directory.mkdirs();
+		}
 
-        UploadResponse uploadResponse =
-                new UploadResponse(
-                        true,
-                        imageUrl
-                );
+		part.write(uploadPath + File.separator + fileName);
 
-        objectMapper.writeValue(
-                response.getWriter(),
-                uploadResponse
-        );
-    }
+		String imageUrl = "/uploads/products/" + fileName;
+
+		response.setContentType("application/json");
+
+		UploadResponse uploadResponse = new UploadResponse(true, imageUrl);
+
+		objectMapper.writeValue(response.getWriter(), uploadResponse);
+	}
 }

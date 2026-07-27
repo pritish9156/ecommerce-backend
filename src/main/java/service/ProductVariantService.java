@@ -4,22 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dao.ProductDAO;
+import dao.ProductImageDAO;
 import dao.ProductVariantDAO;
 import dto.ApiResponse;
 import dto.ProductVariantRequestDTO;
 import dto.ProductVariantResponseDTO;
 import entity.Product;
+import entity.ProductImage;
 import entity.ProductVariant;
 
 public class ProductVariantService {
 
 	ProductVariantDAO productVariantDAO;
 	ProductDAO productDAO;
+	ProductImageDAO imageDAO;
 
 	public ProductVariantService() {
 
 		productVariantDAO = new ProductVariantDAO();
 		productDAO = new ProductDAO();
+		imageDAO = new ProductImageDAO();
 	}
 
 	public ApiResponse addProductVariant(ProductVariantRequestDTO dto) {
@@ -112,8 +116,27 @@ public class ProductVariantService {
 				: new ApiResponse(false, "Unable to deactivate variant.");
 	}
 
-	public ProductVariant getVariant(Long id) {
+	public ProductVariantResponseDTO getVariant(Long id) {
 
-		return productVariantDAO.findById(id);
+		 ProductVariant productVariant = productVariantDAO.findById(id);
+		 
+		 ProductVariantResponseDTO dto = new ProductVariantResponseDTO();
+		 
+		 dto.setActive(productVariant.isActive());
+		 dto.setProductName(productVariant.getProduct().getName());
+		 dto.setDiscountPercentage(productVariant.getDiscountPercentage());
+		 dto.setId(productVariant.getId());
+		 dto.setPrice(productVariant.getPrice());
+		 dto.setProductId(productVariant.getProduct().getId());
+		 dto.setStock(productVariant.getStock());
+		 dto.setSku(productVariant.getSku());
+		 
+		 Product product = productVariant.getProduct();
+		 
+		 ProductImage image = imageDAO.findFirstImageByProduct(product);
+		 
+		 dto.setImage(image);
+		 
+		 return dto;
 	}
 }

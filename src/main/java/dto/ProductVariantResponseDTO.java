@@ -2,6 +2,8 @@ package dto;
 
 import java.math.BigDecimal;
 
+import entity.ProductImage;
+
 public class ProductVariantResponseDTO {
 
 	private Long id;
@@ -12,6 +14,7 @@ public class ProductVariantResponseDTO {
 	private BigDecimal discountPercentage;
 	private Integer stock;
 	private boolean active;
+	private ProductImage image;
 
 	public Long getId() {
 		return id;
@@ -75,5 +78,13 @@ public class ProductVariantResponseDTO {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	
+	public ProductImage getImage() {
+		return image;	
+	}
+
+	public void setImage(ProductImage image) {
+		this.image = image;	
 	}
 }

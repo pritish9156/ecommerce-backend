@@ -14,12 +14,14 @@ import dao.CouponDAO;
 import dao.OrderDAO;
 import dao.OrderItemDAO;
 import dao.PaymentDAO;
+import dao.ProductImageDAO;
 import dao.ProductVariantDAO;
 import dao.UserDAO;
 import dto.ApiResponse;
 import dto.BuyNowRequestDTO;
 import dto.OrderDetailsDTO;
 import dto.OrderItemResponseDTO;
+import dto.OrderResponseDTO;
 import dto.PlaceOrderRequestDTO;
 import dto.RazorpayOrderResponseDTO;
 import dto.RazorpaySuccessDTO;
@@ -30,6 +32,7 @@ import entity.CartItem;
 import entity.Order;
 import entity.OrderItem;
 import entity.Payment;
+import entity.ProductImage;
 import entity.ProductVariant;
 import entity.User;
 import entity.enums.OrderStatus;
@@ -50,6 +53,7 @@ public class OrderService {
 	private ProductVariantDAO productVariantDAO;
 	private PaymentDAO paymentDAO;
 	private CouponDAO couponDAO;
+	private ProductImageDAO productImageDAO;
 
 	public OrderService() {
 
@@ -62,6 +66,7 @@ public class OrderService {
 		productVariantDAO = new ProductVariantDAO();
 		paymentDAO = new PaymentDAO();
 		couponDAO = new CouponDAO();
+		productImageDAO = new ProductImageDAO();
 	}
 
 	public ApiResponse placeOrder(PlaceOrderRequestDTO dto, String email) {
@@ -237,19 +242,133 @@ public class OrderService {
 				data);
 	}
 
-	public List<Order> getOrders(String email) {
+	public List<OrderResponseDTO> getOrders(String email) {
 
 		User user = userDAO.findByEmail(email);
 
 		if (user == null)
 			return List.of();
 
-		return orderDAO.findByUser(user);
+		List<Order> orders = orderDAO.findByUser(user);
+
+		List<OrderResponseDTO> response = new ArrayList<>();
+
+		for (Order order : orders) {
+
+			Payment payment = paymentDAO.findByOrder(order);
+
+			OrderResponseDTO dto = new OrderResponseDTO();
+
+			dto.setId(order.getId());
+
+			dto.setOrderNumber(order.getOrderNumber());
+
+			dto.setUserId(order.getUser().getId());
+
+			dto.setShippingFullName(order.getShippingFullName());
+
+			dto.setShippingMobileNumber(order.getShippingMobileNumber());
+
+			dto.setShippingAddressLine1(order.getShippingAddressLine1());
+
+			dto.setShippingAddressLine2(order.getShippingAddressLine2());
+
+			dto.setShippingLandmark(order.getShippingLandmark());
+
+			dto.setShippingCity(order.getShippingCity());
+
+			dto.setShippingState(order.getShippingState());
+
+			dto.setShippingCountry(order.getShippingCountry());
+
+			dto.setShippingPostalCode(order.getShippingPostalCode());
+
+			dto.setTotalAmount(order.getTotalAmount());
+
+			dto.setOrderStatus(order.getOrderStatus());
+
+			dto.setCreatedAt(order.getCreatedAt());
+
+			dto.setUpdatedAt(order.getUpdatedAt());
+
+			if (payment != null) {
+
+				dto.setPaymentMethod(payment.getPaymentMethod());
+
+				dto.setPaymentStatus(payment.getPaymentStatus());
+
+				dto.setTransactionId(payment.getTransactionId());
+
+			}
+
+			response.add(dto);
+
+		}
+
+		return response;
+
 	}
 
-	public List<Order> getAllOrders() {
+	public List<OrderResponseDTO> getAllOrders() {
 
-		return orderDAO.findAll();
+		List<Order> orders = orderDAO.findAll();
+
+		List<OrderResponseDTO> response = new ArrayList<>();
+
+		for (Order order : orders) {
+
+			Payment payment = paymentDAO.findByOrder(order);
+
+			OrderResponseDTO dto = new OrderResponseDTO();
+
+			dto.setId(order.getId());
+
+			dto.setOrderNumber(order.getOrderNumber());
+
+			dto.setUserId(order.getUser().getId());
+
+			dto.setShippingFullName(order.getShippingFullName());
+
+			dto.setShippingMobileNumber(order.getShippingMobileNumber());
+
+			dto.setShippingAddressLine1(order.getShippingAddressLine1());
+
+			dto.setShippingAddressLine2(order.getShippingAddressLine2());
+
+			dto.setShippingLandmark(order.getShippingLandmark());
+
+			dto.setShippingCity(order.getShippingCity());
+
+			dto.setShippingState(order.getShippingState());
+
+			dto.setShippingCountry(order.getShippingCountry());
+
+			dto.setShippingPostalCode(order.getShippingPostalCode());
+
+			dto.setTotalAmount(order.getTotalAmount());
+
+			dto.setOrderStatus(order.getOrderStatus());
+
+			dto.setCreatedAt(order.getCreatedAt());
+
+			dto.setUpdatedAt(order.getUpdatedAt());
+
+			if (payment != null) {
+
+				dto.setPaymentMethod(payment.getPaymentMethod());
+
+				dto.setPaymentStatus(payment.getPaymentStatus());
+
+				dto.setTransactionId(payment.getTransactionId());
+
+			}
+
+			response.add(dto);
+
+		}
+
+		return response;
+
 	}
 
 	private int getOrderStatusLevel(OrderStatus status) {
@@ -368,14 +487,33 @@ public class OrderService {
 			itemDTO.setPriceAtPurchase(item.getPriceAtPurchase());
 
 			itemDTO.setSubtotal(item.getSubtotal());
+			
+			ProductImage image = productImageDAO.findFirstImageByProduct(variant.getProduct());
+
+			if (image != null) {
+				itemDTO.setImageUrl(image.getImageUrl());
+			}
 
 			itemDTOs.add(itemDTO);
 		}
 
 		OrderDetailsDTO dto = new OrderDetailsDTO();
 
+		Payment payment = paymentDAO.findByOrder(order);
+
 		dto.setOrder(order);
+
 		dto.setItems(itemDTOs);
+
+		if (payment != null) {
+
+			dto.setPaymentMethod(payment.getPaymentMethod());
+
+			dto.setPaymentStatus(payment.getPaymentStatus());
+
+			dto.setTransactionId(payment.getTransactionId());
+
+		}
 
 		return dto;
 	}

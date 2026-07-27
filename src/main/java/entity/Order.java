@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import entity.enums.OrderStatus;
+import entity.enums.PaymentMethod;
 import entity.enums.PaymentStatus;
 import jakarta.persistence.*;
 

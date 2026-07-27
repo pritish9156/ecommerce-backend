@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import dto.ApiResponse;
+import dto.ProductCardResponseDTO;
 import dto.ProductDetailsResponseDTO;
 import dto.ProductRequestDTO;
 import entity.Product;
@@ -70,7 +71,7 @@ public class ProductServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		String pathInfo = req.getPathInfo();
-		
+
 		if (pathInfo != null && pathInfo.startsWith("/details/")) {
 
 			Long productId = Long.parseLong(pathInfo.replace("/details/", ""));
@@ -83,7 +84,7 @@ public class ProductServlet extends HttpServlet {
 
 			return;
 		}
-		
+
 		if (pathInfo != null && pathInfo.startsWith("/related-products/")) {
 
 			Long productId = Long.parseLong(pathInfo.replace("/related-products/", ""));
@@ -110,7 +111,7 @@ public class ProductServlet extends HttpServlet {
 			return;
 		}
 
-		List<Product> products = productService.getAllProducts();
+		List<ProductCardResponseDTO> products = productService.getAllProducts();
 
 		resp.setContentType("application/json");
 

@@ -51,6 +51,66 @@ public class ProductService {
 		return text.toLowerCase().trim().replaceAll("\\s+", "-").replaceAll("[^a-z0-9-]", "");
 	}
 
+	private ProductCardResponseDTO mapToProductCardDTO(Product product) {
+
+		ProductCardResponseDTO card = new ProductCardResponseDTO();
+
+		card.setId(product.getId());
+
+		card.setName(product.getName());
+
+		card.setDescription(product.getDescription());
+
+		card.setSlug(product.getSlug());
+
+		card.setAverageRating(product.getAverageRating());
+
+		card.setReviewCount(product.getReviewCount());
+
+		card.setActive(product.isActive());
+
+		if (product.getBrand() != null) {
+
+			card.setBrandId(product.getBrand().getId());
+
+			card.setBrandName(product.getBrand().getName());
+		}
+
+		if (product.getCategory() != null) {
+
+			card.setCategoryId(product.getCategory().getId());
+
+			card.setCategoryName(product.getCategory().getName());
+		}
+
+		List<Tags> tags = tagDAO.findByProductId(product.getId());
+
+		List<Long> tagIds = new ArrayList<>();
+
+		for (Tags tag : tags) {
+
+			tagIds.add(tag.getId());
+		}
+
+		card.setTagIds(tagIds);
+
+		ProductImage image = productImageDAO.findFirstImageByProduct(product);
+
+		if (image != null) {
+
+			card.setImageUrl(image.getImageUrl());
+		}
+
+		ProductVariant variant = productVariantDAO.findLowestPriceVariant(product);
+
+		if (variant != null) {
+
+			card.setStartingPrice(variant.getPrice().doubleValue());
+		}
+
+		return card;
+	}
+
 	public ApiResponse addProduct(ProductRequestDTO dto) {
 
 		Product existingProduct = productDAO.findByName(dto.getName());
@@ -181,15 +241,23 @@ public class ProductService {
 				: new ApiResponse(false, "Unable to deactivate product.");
 	}
 
-	public List<Product> getAllProducts() {
+	public List<ProductCardResponseDTO> getAllProducts() {
 
 		List<Product> products = productDAO.findAll();
 
 		if (products == null) {
+
 			return List.of();
 		}
 
-		return products;
+		List<ProductCardResponseDTO> response = new ArrayList<>();
+
+		for (Product product : products) {
+
+			response.add(mapToProductCardDTO(product));
+		}
+
+		return response;
 	}
 
 	public ProductSearchResponseDTO searchProducts(ProductSearchRequestDTO dto) {
@@ -204,35 +272,7 @@ public class ProductService {
 
 		for (Product product : products) {
 
-			ProductCardResponseDTO card = new ProductCardResponseDTO();
-
-			card.setId(product.getId());
-
-			card.setName(product.getName());
-
-			card.setBrandName(product.getBrand().getName());
-
-			card.setAverageRating(product.getAverageRating());
-
-			card.setReviewCount(product.getReviewCount());
-
-			card.setSlug(product.getSlug());
-
-			ProductImage image = productImageDAO.findFirstImageByProduct(product);
-
-			if (image != null) {
-
-				card.setImageUrl(image.getImageUrl());
-			}
-
-			ProductVariant variant = productVariantDAO.findLowestPriceVariant(product);
-
-			if (variant != null) {
-
-				card.setStartingPrice(variant.getPrice().doubleValue());
-			}
-
-			productCards.add(card);
+			productCards.add(mapToProductCardDTO(product));
 		}
 
 		Long totalRecords = productDAO.countProducts(dto.getKeyword(), dto.getBrandId(), dto.getSortBy(),
@@ -289,75 +329,46 @@ public class ProductService {
 
 		for (Tags tag : tags) {
 
-		    tagIds.add(tag.getId());
+			tagIds.add(tag.getId());
 
-		    tagNames.add(tag.getName());
+			tagNames.add(tag.getName());
 		}
 
 		dto.setTagIds(tagIds);
 
 		dto.setTagNames(tagNames);
-		
+
 		dto.setImages(productImageDAO.findByProduct(product));
 
 		dto.setVariants(productVariantDAO.findByProduct(product));
 
 		return dto;
 	}
-	
+
 	public ApiResponse getRelatedProducts(Long productId) {
-		
+
 		Product product = productDAO.findById(productId);
-		
-		if(product == null)
+
+		if (product == null)
 			return new ApiResponse(false, "product not found.");
-		
+
 		Long categoryId = product.getCategory().getId();
-		
+
 		Category category = categoryDAO.findById(categoryId);
-		
-		if(category == null)
+
+		if (category == null)
 			return new ApiResponse(false, "category not found.");
-		
+
 		List<Product> relatedProducts = productDAO.findRelatedProducts(categoryId, productId);
 
 		List<ProductCardResponseDTO> productCards = new ArrayList<ProductCardResponseDTO>();
-		
-		for(Product p : relatedProducts) {
-			
-			ProductCardResponseDTO card = new ProductCardResponseDTO();
 
-			card.setId(p.getId());
+		for (Product p : relatedProducts) {
 
-			card.setName(p.getName());
-
-			card.setBrandName(p.getBrand().getName());
-
-			card.setAverageRating(p.getAverageRating());
-
-			card.setReviewCount(p.getReviewCount());
-
-			card.setSlug(p.getSlug());
-
-			ProductImage image = productImageDAO.findFirstImageByProduct(p);
-
-			if (image != null) {
-
-				card.setImageUrl(image.getImageUrl());
-			}
-
-			ProductVariant variant = productVariantDAO.findLowestPriceVariant(p);
-
-			if (variant != null) {
-
-				card.setStartingPrice(variant.getPrice().doubleValue());
-			}
-			
-			productCards.add(card);
-			
+			productCards.add(mapToProductCardDTO(p));
 		}
-		
-		if(productCards.isEmpty())
+
+		if (productCards.isEmpty())
 			return new ApiResponse(true, "No related products found.", productCards);
 		else
 			return new ApiResponse(true, "related products fetched successfully.", productCards);

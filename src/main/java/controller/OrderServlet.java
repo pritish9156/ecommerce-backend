@@ -10,6 +10,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dto.ApiResponse;
 import dto.BuyNowRequestDTO;
 import dto.OrderDetailsDTO;
+import dto.OrderResponseDTO;
 import dto.PlaceOrderRequestDTO;
 import dto.RazorpayFailedDTO;
 import dto.RazorpayOrderResponseDTO;
@@ -126,7 +127,7 @@ public class OrderServlet extends HttpServlet {
 
 		if ("/all".equals(path)) {
 
-			List<Order> orders = orderService.getAllOrders();
+			List<OrderResponseDTO> orders = orderService.getAllOrders();
 
 			response.setContentType("application/json");
 
@@ -150,7 +151,7 @@ public class OrderServlet extends HttpServlet {
 			return;
 		}
 
-		List<Order> orders = orderService.getOrders(email);
+		List<OrderResponseDTO> orders = orderService.getOrders(email);
 
 		response.setContentType("application/json");
 
