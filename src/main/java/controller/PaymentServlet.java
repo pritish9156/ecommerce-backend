@@ -29,7 +29,7 @@ public class PaymentServlet extends HttpServlet {
 	public void init() {
 
 		paymentService = new PaymentService();
-		
+
 		orderService = new OrderService();
 
 		objectMapper = new ObjectMapper();
@@ -59,31 +59,45 @@ public class PaymentServlet extends HttpServlet {
 
 		objectMapper.writeValue(response.getWriter(), dto);
 	}
-	
+
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		String path = request.getPathInfo();
-		
+
 		response.setContentType("application/json");
-		
+
 		if (path == null || path.equals("/")) {
 
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
 
 			return;
 		}
-		
+
 		if (path.startsWith("/retry/")) {
-			
+
 			Long orderId = Long.parseLong(path.substring("/retry/".length()));
-			
+
 			ApiResponse apiResponse = paymentService.retryPayment(orderId);
-			
+
 			objectMapper.writeValue(response.getOutputStream(), apiResponse);
-			
+
 			return;
-			
+
+		}
+
+		if (path.startsWith("/pay-online/")) {
+
+			Long orderId = Long.parseLong(path.substring("/pay-online/".length()));
+
+			ApiResponse apiResponse = paymentService.payCodOrder(orderId);
+
+			response.setContentType("application/json");
+
+			objectMapper.writeValue(response.getWriter(), apiResponse);
+
+			return;
 		}
 	}
 
