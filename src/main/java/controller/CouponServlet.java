@@ -7,11 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.ApiResponse;
 import dto.ApplyBuyNowCouponDTO;
-import dto.ApplyCouponRequestDTO;
 import dto.CouponCalculationDTO;
-import dto.CouponRequestDTO;
+import dto.request.ApplyCouponRequestDTO;
+import dto.request.CouponRequestDTO;
+import dto.response.ApiResponse;
 import entity.Coupon;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

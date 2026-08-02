@@ -131,11 +131,13 @@ public class ProductDAO {
 		return products;
 	}
 
-	public List<Product> searchProducts(String keyword, Long brandId, int page, int size) {
+	public List<Product> searchProducts(String keyword, Long brandId, String sortBy, String sortDirection, int page,
+			int size) {
 
 		Session session = HibernateUtil.getSessionFactory().openSession();
 
-		StringBuilder hql = new StringBuilder("FROM Product p WHERE p.isActive = true");
+		StringBuilder hql = new StringBuilder(
+				"FROM Product p JOIN ProductVariant pv ON pv.product = p WHERE p.isActive = true");
 
 		if (keyword != null && !keyword.trim().isEmpty()) {
 
@@ -145,6 +147,52 @@ public class ProductDAO {
 		if (brandId != null) {
 
 			hql.append(" AND p.brand.id = :brandId");
+		}
+
+		if (sortBy != null && !sortBy.isBlank()) {
+
+			switch (sortBy.toLowerCase()) {
+
+			case "name":
+
+				hql.append(" ORDER BY p.name ASC");
+
+				break;
+
+			case "rating":
+
+				hql.append(" ORDER BY p.averageRating DESC");
+
+				break;
+
+			case "newest":
+
+				hql.append(" ORDER BY p.createdAt DESC");
+
+				break;
+
+			case "price_low":
+
+				hql.append(" ORDER BY pv.price ASC");
+
+				break;
+
+			case "price_high":
+
+				hql.append(" ORDER BY pv.price DESC");
+
+				break;
+
+			default:
+
+				hql.append(" ORDER BY p.createdAt DESC");
+
+			}
+
+		} else {
+
+			hql.append(" ORDER BY p.createdAt DESC");
+
 		}
 
 		Query<Product> query = session.createQuery(hql.toString(), Product.class);
@@ -167,6 +215,8 @@ public class ProductDAO {
 
 		session.close();
 
+		System.out.println(hql.toString());
+
 		return products;
 	}
 
@@ -184,29 +234,6 @@ public class ProductDAO {
 		if (brandId != null) {
 
 			hql.append(" AND p.brand.id = :brandId");
-		}
-
-		if (sortBy != null) {
-
-			switch (sortBy.toLowerCase()) {
-
-			case "name":
-				hql.append(" ORDER BY p.name ");
-				break;
-
-			case "rating":
-				hql.append(" ORDER BY p.averageRating ");
-				break;
-
-			case "newest":
-				hql.append(" ORDER BY p.createdAt ");
-				break;
-
-			default:
-				hql.append(" ORDER BY p.createdAt ");
-			}
-
-			hql.append("desc".equalsIgnoreCase(sortDirection) ? "DESC" : "ASC");
 		}
 
 		Query<Long> query = session.createQuery(hql.toString(), Long.class);
@@ -231,20 +258,20 @@ public class ProductDAO {
 	public List<Product> findRelatedProducts(Long categoryId, Long currentProductId) {
 
 		Session session = HibernateUtil.getSessionFactory().openSession();
-		
+
 		String hql = "From Product p where p.category.id = :categoryId AND p.id <> :currentProductId AND isActive = true";
-	
+
 		Query<Product> query = session.createQuery(hql, Product.class);
-		
+
 		query.setParameter("categoryId", categoryId);
 		query.setParameter("currentProductId", currentProductId);
 
 		query.setMaxResults(8);
-		
+
 		List<Product> relatedProductList = query.getResultList();
-		
+
 		session.close();
-		
+
 		return relatedProductList;
 	}
 }

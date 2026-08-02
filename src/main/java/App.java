@@ -1,5 +1,5 @@
-import dto.AuthResponse;
-import dto.LoginRequest;
+import dto.request.LoginRequest;
+import dto.response.AuthResponse;
 import entity.User;
 import entity.enums.Role;
 import service.AuthService;

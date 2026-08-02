@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.ApiResponse;
-import dto.WishlistRequestDTO;
-import dto.WishlistResponseDTO;
+import dto.request.WishlistRequestDTO;
+import dto.response.ApiResponse;
+import dto.response.WishlistResponseDTO;
 import entity.Wishlist;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

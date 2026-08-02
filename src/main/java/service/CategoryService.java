@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dao.CategoryDAO;
-import dto.ApiResponse;
-import dto.CategoryRequestDTO;
-import dto.CategoryResponseDTO;
+import dto.request.CategoryRequestDTO;
+import dto.response.ApiResponse;
+import dto.response.CategoryResponseDTO;
 import entity.Category;
 
 public class CategoryService {

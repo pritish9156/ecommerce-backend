@@ -3,8 +3,8 @@ package service;
 import java.util.List;
 
 import dao.BrandDAO;
-import dto.ApiResponse;
-import dto.BrandRequestDTO;
+import dto.request.BrandRequestDTO;
+import dto.response.ApiResponse;
 import entity.Brand;
 
 public class BrandService {

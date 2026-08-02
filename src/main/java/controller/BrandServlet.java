@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.ApiResponse;
-import dto.BrandRequestDTO;
+import dto.request.BrandRequestDTO;
+import dto.response.ApiResponse;
 import entity.Brand;
 
 @WebServlet("/brand/*")

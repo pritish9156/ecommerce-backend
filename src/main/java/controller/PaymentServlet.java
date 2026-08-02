@@ -6,25 +6,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.ApiResponse;
-import dto.PaymentResponseDTO;
 import dto.UpdatePaymentStatusDTO;
+import dto.response.ApiResponse;
+import dto.response.PaymentResponseDTO;
+import dto.response.RazorpayOrderResponseDTO;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import service.OrderService;
 import service.PaymentService;
 
 @WebServlet("/payment/*")
 public class PaymentServlet extends HttpServlet {
 
 	private PaymentService paymentService;
+	private OrderService orderService;
 	private ObjectMapper objectMapper;
 
 	@Override
 	public void init() {
 
 		paymentService = new PaymentService();
+		
+		orderService = new OrderService();
 
 		objectMapper = new ObjectMapper();
 
@@ -52,6 +58,33 @@ public class PaymentServlet extends HttpServlet {
 		response.setContentType("application/json");
 
 		objectMapper.writeValue(response.getWriter(), dto);
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String path = request.getPathInfo();
+		
+		response.setContentType("application/json");
+		
+		if (path == null || path.equals("/")) {
+
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+
+			return;
+		}
+		
+		if (path.startsWith("/retry/")) {
+			
+			Long orderId = Long.parseLong(path.substring("/retry/".length()));
+			
+			ApiResponse apiResponse = paymentService.retryPayment(orderId);
+			
+			objectMapper.writeValue(response.getOutputStream(), apiResponse);
+			
+			return;
+			
+		}
 	}
 
 	@Override

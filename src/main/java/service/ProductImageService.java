@@ -4,8 +4,8 @@ import java.util.List;
 
 import dao.ProductDAO;
 import dao.ProductImageDAO;
-import dto.ApiResponse;
-import dto.ProductImageRequestDTO;
+import dto.request.ProductImageRequestDTO;
+import dto.response.ApiResponse;
 import entity.Product;
 import entity.ProductImage;
 

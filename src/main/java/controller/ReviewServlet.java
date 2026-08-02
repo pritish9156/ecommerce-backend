@@ -9,8 +9,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import dao.ProductDAO;
 import dao.ReviewDAO;
-import dto.ApiResponse;
-import dto.ReviewRequestDTO;
+import dto.request.ReviewRequestDTO;
+import dto.response.ApiResponse;
 import entity.Product;
 import entity.Review;
 import jakarta.servlet.ServletException;

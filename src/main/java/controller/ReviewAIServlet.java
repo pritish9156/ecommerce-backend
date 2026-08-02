@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dto.ApiResponse;
-import dto.ReviewAIRequestDTO;
+import dto.request.ReviewAIRequestDTO;
+import dto.response.ApiResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

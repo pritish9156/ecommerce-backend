@@ -12,9 +12,9 @@ import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dto.ApiResponse;
-import dto.ReviewAIRequestDTO;
-import dto.ReviewAIResponseDTO;
+import dto.request.ReviewAIRequestDTO;
+import dto.response.ApiResponse;
+import dto.response.ReviewAIResponseDTO;
 
 public class ReviewAIService {
 

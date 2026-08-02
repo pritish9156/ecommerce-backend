@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.ApiResponse;
-import dto.ProductVariantRequestDTO;
-import dto.ProductVariantResponseDTO;
+import dto.request.ProductVariantRequestDTO;
+import dto.response.ApiResponse;
+import dto.response.ProductVariantResponseDTO;
 import entity.ProductVariant;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

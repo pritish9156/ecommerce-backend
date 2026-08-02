@@ -10,12 +10,12 @@ import dao.ProductImageDAO;
 import dao.ProductVariantDAO;
 import dao.ReviewDAO;
 import dao.TagDAO;
-import dto.ApiResponse;
-import dto.ProductCardResponseDTO;
-import dto.ProductDetailsResponseDTO;
-import dto.ProductRequestDTO;
-import dto.ProductSearchRequestDTO;
-import dto.ProductSearchResponseDTO;
+import dto.request.ProductRequestDTO;
+import dto.request.ProductSearchRequestDTO;
+import dto.response.ApiResponse;
+import dto.response.ProductCardResponseDTO;
+import dto.response.ProductDetailsResponseDTO;
+import dto.response.ProductSearchResponseDTO;
 import entity.Brand;
 import entity.Category;
 import entity.Product;
@@ -266,7 +266,21 @@ public class ProductService {
 
 		int size = dto.getSize() == null ? 10 : dto.getSize();
 
-		List<Product> products = productDAO.searchProducts(dto.getKeyword(), dto.getBrandId(), page, size);
+		List<Product> products = productDAO.searchProducts(
+
+				dto.getKeyword(),
+
+				dto.getBrandId(),
+
+				dto.getSortBy(),
+
+				dto.getSortDirection(),
+
+				page,
+
+				size
+
+		);
 
 		List<ProductCardResponseDTO> productCards = new ArrayList<>();
 

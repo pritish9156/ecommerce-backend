@@ -10,6 +10,8 @@ public enum OrderStatus {
     DELIVERED,
     CANCELLED,
     RETURN_REQUESTED,
+    REFUND_REQUESTED,
+    REFUND_IN_PROGRESS,
     RETURNED,
     REFUNDED
 

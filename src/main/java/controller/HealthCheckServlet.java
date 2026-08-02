@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dto.ApiResponse;
+import dto.response.ApiResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

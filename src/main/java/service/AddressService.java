@@ -4,8 +4,8 @@ import java.util.List;
 
 import dao.AddressDAO;
 import dao.UserDAO;
-import dto.AddressRequestDTO;
-import dto.ApiResponse;
+import dto.request.AddressRequestDTO;
+import dto.response.ApiResponse;
 import entity.Address;
 import entity.User;
 

@@ -7,10 +7,10 @@ import java.util.UUID;
 import auth.VerificationToken;
 import dao.UserDAO;
 import dao.VerificationTokenDAO;
-import dto.ApiResponse;
-import dto.AuthResponse;
-import dto.LoginRequest;
-import dto.RegisterRequest;
+import dto.request.LoginRequest;
+import dto.request.RegisterRequest;
+import dto.response.ApiResponse;
+import dto.response.AuthResponse;
 import entity.User;
 import entity.enums.Role;
 import entity.enums.TokenType;
@@ -223,21 +223,21 @@ public class AuthService {
 		User user = userDAO.findByEmail(request.getEmail());
 		
 		if(user == null) {
-			return new AuthResponse(false, "Invalid email or password", null, null, null);
+			return new AuthResponse(false, "Invalid email or password", null, null, null, null);
 		}
 		
 		boolean passwordStatus = BCryptUtil.verifyPassword(request.getPassword(), user.getPassword());
 		
 		if(passwordStatus==false) {
-			return new AuthResponse(false, "Invalid password", null, null, null);
+			return new AuthResponse(false, "Invalid password", null, null, null, null);
 		}
 		
 		if(!user.isEmailVerified()) {
-			return new AuthResponse(false, "Please verify your email before logging in.", null, null, null);
+			return new AuthResponse(false, "Please verify your email before logging in.", null, null, null, null);
 		}
 		
 		if(!user.isActive()) {
-			return new AuthResponse(false, "Account is disabled.", null, null, null);
+			return new AuthResponse(false, "Account is disabled.", null, null, null, null);
 		}
 		
 		String token = JwtUtil.generateToken(user);
@@ -246,6 +246,7 @@ public class AuthService {
 		        true,
 		        "Login successful",
 		        token,
+		        user.getFirstName() + " " + user.getLastName(),
 		        user.getRole().name(),
 		        user.getId()
 		);

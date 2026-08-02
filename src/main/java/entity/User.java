@@ -45,6 +45,8 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 	
+	private String profileImage;
+	
 	private boolean isActive;
 	
 	private boolean emailVerified;
@@ -74,7 +76,7 @@ public class User {
 	}
 
 	public User(Long id, String firstName, String lastName, String email, String password, String mobileNumber,
-			Role role, boolean isActive, boolean emailVerified, LocalDateTime createdAt, LocalDateTime updatedAt) {
+			Role role, String profileImage, boolean isActive, boolean emailVerified, LocalDateTime createdAt, LocalDateTime updatedAt) {
 
 		this.id = id;
 		this.firstName = firstName;
@@ -83,6 +85,7 @@ public class User {
 		this.password = password;
 		this.mobileNumber = mobileNumber;
 		this.role = role;
+		this.profileImage = profileImage;
 		this.isActive = isActive;
 		this.emailVerified = emailVerified;
 		this.createdAt = createdAt;
@@ -147,6 +150,14 @@ public class User {
 
 	public void setRole(Role role) {
 		this.role = role;
+	}
+	
+	public String getProfileImage() {
+		return profileImage;
+	}
+
+	public void setProfileImage(String profileImage) {
+		this.profileImage = profileImage;
 	}
 
 	public boolean isActive() {

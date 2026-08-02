@@ -17,15 +17,15 @@ import dao.PaymentDAO;
 import dao.ProductImageDAO;
 import dao.ProductVariantDAO;
 import dao.UserDAO;
-import dto.ApiResponse;
-import dto.BuyNowRequestDTO;
 import dto.OrderDetailsDTO;
-import dto.OrderItemResponseDTO;
-import dto.OrderResponseDTO;
-import dto.PlaceOrderRequestDTO;
-import dto.RazorpayOrderResponseDTO;
 import dto.RazorpaySuccessDTO;
 import dto.UpdateOrderStatusDTO;
+import dto.request.BuyNowRequestDTO;
+import dto.request.PlaceOrderRequestDTO;
+import dto.response.ApiResponse;
+import dto.response.OrderItemResponseDTO;
+import dto.response.OrderResponseDTO;
+import dto.response.RazorpayOrderResponseDTO;
 import entity.Address;
 import entity.Cart;
 import entity.CartItem;
@@ -392,6 +392,9 @@ public class OrderService {
 
 		case DELIVERED:
 			return 6;
+			
+		case CANCELLED:
+			return 7;
 
 		default:
 			return 0;
@@ -401,6 +404,8 @@ public class OrderService {
 	public ApiResponse updateOrderStatus(UpdateOrderStatusDTO dto) {
 
 		Order order = orderDAO.findById(dto.getOrderId());
+		
+		Payment payment = paymentDAO.findByOrder(order);
 
 		if (order == null)
 			return new ApiResponse(false, "Order not found");
@@ -419,12 +424,15 @@ public class OrderService {
 
 		if (getOrderStatusLevel(newStatus) < getOrderStatusLevel(order.getOrderStatus())) {
 
-			return new ApiResponse(false, "Cannot move order backwards");
+			return new ApiResponse(false, "Cannot move order status backwards");
+		}
+		
+		if (newStatus == OrderStatus.DELIVERED && payment.getPaymentStatus() != PaymentStatus.SUCCESS) {
+			
+			return new ApiResponse(false, "Order cannot be marked as delivered until payment is completed successfully");
 		}
 
-		order.setOrderStatus(
-
-				OrderStatus.valueOf(dto.getOrderStatus()));
+		order.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
 
 		boolean updated = orderDAO.update(order);
 
@@ -538,12 +546,21 @@ public class OrderService {
 
 			return new ApiResponse(false, "Cannot Cancel Order");
 		}
+		
+		Payment payment = paymentDAO.findByOrder(order);
+		
+		if(payment.getPaymentStatus() == PaymentStatus.SUCCESS)
+			order.setOrderStatus(OrderStatus.REFUND_IN_PROGRESS);
+		else {
+			order.setOrderStatus(OrderStatus.CANCELLED);
+			order.setPaymentStatus(PaymentStatus.FAILED);
+			payment.setPaymentStatus(PaymentStatus.FAILED);
+		}
+			
+		boolean paymentUpdated = paymentDAO.update(payment);
+		boolean orderUpdated = orderDAO.update(order);
 
-		order.setOrderStatus(OrderStatus.CANCELLED);
-
-		boolean updated = orderDAO.update(order);
-
-		if (updated) {
+		if (paymentUpdated && orderUpdated) {
 
 			EmailService.sendOrderCancelledEmail(order);
 
@@ -652,8 +669,6 @@ public class OrderService {
 
 						+ System.currentTimeMillis());
 
-		payment.setPaymentMethod(PaymentMethod.valueOf(dto.getPaymentMethod()));
-
 		payment.setPaymentStatus(PaymentStatus.PENDING);
 
 		System.out.println("REQUEST METHOD = " + dto.getPaymentMethod());
@@ -746,8 +761,14 @@ public class OrderService {
 
 			if (order == null)
 				return null;
+			
+			if(order.getOrderStatus() == OrderStatus.CANCELLED || order.getOrderStatus() == OrderStatus.DELIVERED)
+				return null;
 
 			Payment payment = paymentDAO.findByOrder(order);
+			
+			if(payment.getPaymentStatus() != PaymentStatus.FAILED && payment.getPaymentStatus() != PaymentStatus.PENDING)
+				return null;
 
 			com.razorpay.Order razorOrder = RazorpayUtil.createOrder(
 

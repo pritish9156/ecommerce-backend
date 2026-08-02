@@ -1,18 +1,25 @@
 package service;
 
+import dao.OrderDAO;
 import dao.PaymentDAO;
-import dto.ApiResponse;
-import dto.PaymentResponseDTO;
 import dto.UpdatePaymentStatusDTO;
+import dto.response.ApiResponse;
+import dto.response.PaymentResponseDTO;
+import dto.response.RazorpayOrderResponseDTO;
+import entity.Order;
 import entity.Payment;
 
 public class PaymentService {
 
-	private PaymentDAO paymentDAO;
+	private PaymentDAO paymentDAO;	
+	private OrderDAO orderDAO;
+	private OrderService orderService;
 
 	public PaymentService() {
 
 		paymentDAO = new PaymentDAO();
+		orderDAO = new OrderDAO();
+		orderService = new OrderService();
 	}
 
 	public PaymentResponseDTO getPaymentByOrder(Long orderId) {
@@ -38,14 +45,32 @@ public class PaymentService {
 	public ApiResponse updatePaymentStatus(UpdatePaymentStatusDTO dto) {
 
 		Payment payment = paymentDAO.findById(dto.getPaymentId());
-
+		
 		if (payment == null)
 			return new ApiResponse(false, "Payment not found");
+		
+		Order order = payment.getOrder();	
 
 		payment.setPaymentStatus(dto.getPaymentStatus());
+		order.setPaymentStatus(dto.getPaymentStatus());
 
-		paymentDAO.update(payment);
+		boolean paymentStatus = paymentDAO.update(payment);
+		boolean orderPaymentStatus = orderDAO.update(order);
 
-		return new ApiResponse(true, "Payment Updated");
+		if (paymentStatus && orderPaymentStatus)
+			return new ApiResponse(true, "Payment status Updated");
+		else
+			return new ApiResponse(false, "Failed to update payment status");
+	}
+
+	public ApiResponse retryPayment(Long orderId) {
+		
+		RazorpayOrderResponseDTO dto = orderService.createRazorpayOrder(orderId);
+		
+		if(dto == null)
+			return new ApiResponse(false, "failed to retry your payment");
+		else
+			return new ApiResponse(true, "retry payment initiated", dto);
+		
 	}
 }

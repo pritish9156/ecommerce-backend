@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dao.TagDAO;
-import dto.ApiResponse;
-import dto.CategoryRequestDTO;
-import dto.CategoryResponseDTO;
-import dto.TagRequestDTO;
-import dto.TagResponseDTO;
+import dto.request.CategoryRequestDTO;
+import dto.request.TagRequestDTO;
+import dto.response.ApiResponse;
+import dto.response.CategoryResponseDTO;
+import dto.response.TagResponseDTO;
 import entity.Category;
 import entity.Tags;
 

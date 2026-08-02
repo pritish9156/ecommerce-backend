@@ -7,10 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.ApiResponse;
-import dto.ProductCardResponseDTO;
-import dto.ProductDetailsResponseDTO;
-import dto.ProductRequestDTO;
 import entity.Product;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,8 +14,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import service.ProductService;
-import dto.ProductSearchRequestDTO;
-import dto.ProductSearchResponseDTO;
+import dto.request.ProductRequestDTO;
+import dto.request.ProductSearchRequestDTO;
+import dto.response.ApiResponse;
+import dto.response.ProductCardResponseDTO;
+import dto.response.ProductDetailsResponseDTO;
+import dto.response.ProductSearchResponseDTO;
 
 @WebServlet("/product/*")
 public class ProductServlet extends HttpServlet {

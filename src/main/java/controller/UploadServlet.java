@@ -6,9 +6,11 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
-import dto.ApiResponse;
-import dto.UploadResponse;
+import dto.response.ApiResponse;
+import dto.response.UploadResponse;
+import entity.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,12 +18,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import service.UserService;
 
 @WebServlet("/upload/*")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 20)
 public class UploadServlet extends HttpServlet {
 
 	private ObjectMapper objectMapper;
+	
+	
+	private UserService userService;
 
 	private static final String UPLOAD_ROOT = "E:" + File.separator + "ShopSphereUploads";
 
@@ -29,6 +35,7 @@ public class UploadServlet extends HttpServlet {
 	public void init() {
 
 		objectMapper = new ObjectMapper();
+		userService = new UserService();
 	}
 
 	@Override
@@ -51,10 +58,68 @@ public class UploadServlet extends HttpServlet {
 
 			break;
 
+		case "/profile":
+
+			uploadProfileImage(request, response);
+			
+			break;
+
 		default:
 
 			response.sendError(404);
 		}
+	}
+
+	private void uploadProfileImage(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
+
+		Part part = request.getPart("image");
+		
+		String email = (String) request.getAttribute("email");
+		
+		System.out.println("upload user ka email.." + email);
+			
+		ApiResponse userResponse = userService.getProfile(email);	
+		
+		User user = null;
+		
+		if(userResponse.isSuccess()) {
+			user = (User) userResponse.getData();
+		}
+		else {
+			objectMapper.writeValue(response.getOutputStream(), userResponse);
+			return;
+		}
+		
+		String originalFileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+		
+		String extension = "";
+		
+		int index = originalFileName.lastIndexOf('.');
+		
+		if(index != -1)
+			extension = originalFileName.substring(index);
+
+		String fileName = user.getId()+ "_" + UUID.randomUUID() + extension;
+
+		String uploadPath = UPLOAD_ROOT + File.separator + "profiles";
+
+		File directory = new File(uploadPath);
+
+		if (!directory.exists()) {
+
+			directory.mkdirs();
+		}
+
+		part.write(uploadPath + File.separator + fileName);
+
+		String imageUrl = "/uploads/profiles/" + fileName;
+
+		response.setContentType("application/json");
+
+		UploadResponse uploadResponse = new UploadResponse(true, imageUrl);
+
+		objectMapper.writeValue(response.getWriter(), uploadResponse);
 	}
 
 	private void uploadBrandImage(HttpServletRequest request, HttpServletResponse response)

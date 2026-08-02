@@ -6,11 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.ApiResponse;
-import dto.AuthResponse;
-import dto.LoginRequest;
-import dto.RegisterRequest;
-import dto.ResendVerificationRequest;
+import dto.request.LoginRequest;
+import dto.request.RegisterRequest;
+import dto.request.ResendVerificationRequest;
+import dto.response.ApiResponse;
+import dto.response.AuthResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

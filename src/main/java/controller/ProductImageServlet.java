@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dto.ApiResponse;
-import dto.ProductImageRequestDTO;
+import dto.request.ProductImageRequestDTO;
+import dto.response.ApiResponse;
 import entity.ProductImage;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
