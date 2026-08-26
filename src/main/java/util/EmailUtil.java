@@ -70,7 +70,7 @@ public class EmailUtil {
 			message.setFrom(username);
 			message.setRecipients(Message.RecipientType.TO, recipientEmail);
 			message.setSubject(subject);
-			message.setText(body);
+			message.setContent(body, "text/html; charset=UTF-8");
 
 			Transport.send(message);
 		} catch (MessagingException e) {

@@ -47,9 +47,9 @@ public class User {
 	
 	private String profileImage;
 	
-	private boolean isActive;
+	private boolean isActive = true;
 	
-	private boolean emailVerified;
+	private boolean emailVerified = false;
 	
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
@@ -59,15 +59,14 @@ public class User {
 	
 	@PrePersist
 	public void onCreate() {
-		
-		if (role == null) {
+
+	    if (role == null) {
 	        role = Role.CUSTOMER;
 	    }
-		
-		isActive = true;
-		emailVerified = false;
-		createdAt = LocalDateTime.now();
-		updatedAt = LocalDateTime.now();
+
+	    createdAt = LocalDateTime.now();
+
+	    updatedAt = LocalDateTime.now();
 	}
 	
 	@PreUpdate

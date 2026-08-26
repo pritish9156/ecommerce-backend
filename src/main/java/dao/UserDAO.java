@@ -7,6 +7,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import entity.User;
+import entity.enums.Role;
 import util.HibernateUtil;
 
 public class UserDAO {
@@ -109,6 +110,24 @@ public class UserDAO {
 		session.close();
 
 		return user;
+	}
+
+	public User findAdmin() {
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+
+		try {
+
+			Query<User> query = session.createQuery("FROM User u WHERE u.role = :role", User.class);
+
+			query.setParameter("role", Role.ADMIN);
+
+			return query.setMaxResults(1).uniqueResult();
+
+		} finally {
+
+			session.close();
+		}
 	}
 
 }

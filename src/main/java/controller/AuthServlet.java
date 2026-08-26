@@ -1,6 +1,8 @@
 package controller;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -48,12 +50,13 @@ public class AuthServlet extends HttpServlet {
 
 			ApiResponse apiResponse = authService.verifyEmail(token);
 
-			response.setContentType("application/json");
+			String message = URLEncoder.encode(apiResponse.getMessage(), StandardCharsets.UTF_8);
 
-			objectMapper.writeValue(response.getWriter(), apiResponse);
-		} else {
+			String status = apiResponse.isSuccess() ? "success" : "error";
 
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			response.sendRedirect("http://localhost:5173/login?verification=" + status + "&message=" + message);
+
+			return;
 		}
 	}
 

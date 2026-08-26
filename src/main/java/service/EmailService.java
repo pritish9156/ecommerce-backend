@@ -43,8 +43,16 @@ public class EmailService {
 
 		String subject = "Verify Your ShopVerse Account";
 
-		String body = "Welcome to ShopVerse.\n\n" + "Please verify your account using the link below:\n\n"
-				+ verificationLink;
+		String body = "<html>" + "<body>" + "<h2>Welcome to Your Store</h2>" + "<p>Thank you for registering.</p>"
+				+ "<p>Please verify your email address by clicking the button below:</p>" +
+
+				"<a href='" + verificationLink + "' " + "style='display:inline-block;" + "padding:12px 24px;"
+				+ "background:#2563eb;" + "color:#ffffff;" + "text-decoration:none;" + "border-radius:6px;"
+				+ "font-weight:bold;'>" + "Verify Email" + "</a>" +
+
+				"<p>This link will expire after the specified time.</p>"
+				+ "<p>If you did not create this account, you can safely ignore this email.</p>" + "</body>"
+				+ "</html>";
 
 		EmailUtil.sendEmail(recipientEmail, subject, body);
 
